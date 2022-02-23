@@ -13,9 +13,10 @@
 
 <section
 	style="position: relative; width: 30%; height: 120px; margin: auto;">
-		<c:forEach var="groupList" items="${groupList}" varStatus="status">
-	<div
-		style="border-radius: 50%; background-color: gainsboro; width: 100px; height: 100px; position: relative; top: 10%; left: 10%; display: inline-block;">
+	<c:forEach var="group" items="${groupList}" varStatus="status">
+	<div class="group-div" onclick="location.href='<c:out value='${pageContext.request.contextPath}'/>/group/groupPage/<c:out value='${group.groupId}'/>'">
+	<div class="group-image-div"
+		style="border-radius: 50%; width: 100px; height: 100px; position: relative; display:inline-block ">
 		<c:if test="${empty group.image}">
 			<img
 				style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-radius: 50%;"
@@ -29,8 +30,8 @@
 				alt="" />
 		</c:if>
 	</div>
-	<div
-		style="position: relative; top: -10%; left: 20%; display: inline-block;">
+	<div class="group-info-div"
+		style="display: inline-block;">
 		<table>
 			<tr>
 				<td>${group.groupName}</td>
@@ -41,5 +42,18 @@
 	</div>
 	</c:forEach>
 </section>
-
+<style>
+.group-div:hover {
+	cursor:pointer;
+}
+</style>
+<script>
+/* $(".group-div").click((e)=>{
+	console.log($(e.currentTarget).children("#group-id").val());
+	location.href="<c:out value='${pageContext.request.contextPath}'/>/group/groupPage/"+$(e.target).children("#group-id").val();
+})
+$(".group-image-div").click((e)=>{
+	$(e.target).parent(".group-div").trigger("click");
+}) */
+</script>
 <jsp:include page="/WEB-INF/views/common/footer.jsp"></jsp:include>
