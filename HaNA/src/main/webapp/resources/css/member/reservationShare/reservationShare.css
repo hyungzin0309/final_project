@@ -1,0 +1,107 @@
+@charset "UTF-8";
+
+.form__group {
+    position: relative;
+    padding: 15px 0 0;
+    margin-top: 10px;
+    width: 70%;
+}
+
+.form__field {
+    font-family: inherit;
+    width: 100%;
+    border: 0;
+    border-bottom: 2px solid #9b9b9b;
+    outline: 0;
+    font-size: 1.3rem;
+    color: black;
+    padding: 7px 0;
+    background: transparent;
+    transition: border-color 0.2s;
+}
+
+.form__field::placeholder {
+    color: transparent;
+}
+
+.form__field:placeholder-shown ~ .form__label {
+    font-size: 1.3rem;
+    cursor: text;
+    top: 20px;
+}
+
+.form__label {
+    position: absolute;
+    top: 0;
+    display: block;
+    transition: 0.2s;
+    font-size: 1rem;
+    color: #9b9b9b;
+}
+
+.form__field:focus {
+    padding-bottom: 6px;
+    font-weight: 700;
+    border-width: 3px;
+    border-image: linear-gradient(to right, #11998e, #38ef7d);
+    border-image-slice: 1;
+}
+
+/* .form__field:focus ~ .form__label {
+    position: absolute;
+    top: 0;
+    display: block;
+    transition: 0.2s;
+    font-size: 1rem;
+    color: #11998e;
+    font-weight: 700;
+} */
+
+/* reset input */
+.form__field:required, .form__field:invalid {
+    box-shadow: none;
+}
+
+/* demo */
+/* body {
+    font-family: 'Poppins', sans-serif;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    font-size: 1.5rem;
+    background-color: #222222;
+} */
+
+#acceptedFriendListTable{
+	width:60%;
+	margin-top:20px;
+}
+#acceptedFriendListTable td{
+	margin-top:5px;
+}
+
+#friendListTable {
+	width:60%;
+	margin-top:20px;
+	margin-bottom:30px;
+}
+
+/* 버튼 */
+.bn62 {
+  color: #1cc49d;
+  background-color: #1b2f31;
+  border-radius: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 1.5em;
+  width: 4em;
+  /* font-size: large; */
+  font-weight: 600;
+  text-decoration:none;
+}
+
+
+

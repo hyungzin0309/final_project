@@ -4,60 +4,420 @@
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="chat">
 	<select id="roomList" resultType="chatroom">
-		select 
-		distinct room_no, member_id 
-		from chat 
-		where room_no in (select distinct room_no from chat where member_id = #{id}) 
-		and 
-		member_id != #{id}
+	select distinct * from chat_room where room_no in (select 
+		room_no
+	from 
+		chat_room 
+	where (members like '%' || #{id} || '%' and room_type = 0) 
+		or 
+	group_room_id in ( select group_id from group_member_list where member_id = #{id})
+    ) and room_no not in(select room_no from chat where member_id = #{id} and message='ROOMOUT')
+	</select>
+		
+	<select id="roomchat2" resultMap="chatMap">
+	select 
+		c.*, m.picture 
+	from 
+		chat c left join member m 
+		on c.member_id = m.id 
+	where 
+		c.room_no = #{roomNo}  and to_char(message_reg_date, 'YYYY/MM/DD HH24:MI:SS') >= to_char((select MAX(message_reg_date) from chat where message = 'ROOMENTER' and member_id=#{memberId} and room_no = #{roomNo}), 'YYYY/MM/DD HH24:MI:SS')
+		order by c.message_reg_date
 	</select>
 	
-	<select id="roomchat" resultType="chat">
-	select
-		*
-	from
-		chat
-	where room_no = #{no}
-	order by message_reg_date
-	</select>
+	<resultMap type="map" id="chatMap">
+		<id column="room_no" property="roomNo"/>
+		<result column="member_id" property="memberId"/>
+		<result column="message" property="message"/>
+		<result column="message_reg_date" property="messageRegDate"/>
+		<result column="unreadcount" property="unreadcount"/>
+		<result column="picture" property="picture"/>
+		<result column="attachment" property="fileImg"/>
+	</resultMap>
+	
 	<select id="selectChatRoom" resultType="chatroom">
 	select 
 		* 
 	from
-		chatroom
+		chat_room
 	where
 		room_no = #{roomNo}
 	</select>
+	
+	<select id="searchPicture" resultType="string">
+	select
+		picture
+	from 
+		member
+	where
+		id = #{member}
+	</select>
+	
 	<insert id="insertMessage">
 	INSERT 
 		INTO 
 	CHAT 
-		VALUES(#{roomNo}, #{memberId}, #{message}, default, default)
+		VALUES(#{roomNo}, #{memberId}, #{message}, default, #{memberId},default)
 	</insert>
-	<select id="memberList" resultType="member">
+	<insert id="insertFileMessage">
+	INSERT 
+		INTO 
+	CHAT 
+		VALUES(#{roomNo}, #{memberId}, #{message}, default, #{memberId}, #{fileImg})
+	</insert>
+	<update id="updateUnreadCount">
+	update 
+		chat 
+	set 
+		unreadcount = unreadcount ||','||#{memberId}
+	where 
+		unreadcount not like '%'||#{memberId}||'%'
+		and room_no = #{roomNo}
+	</update>
+	
+	<select id="followerList" resultType="member">
 	select
 		*
 	from
 		member
+	where
+		id in (select distinct member_id from follower where following_id = #{id})
 	</select>
-	<select id="chatRoomCheck" resultType="chat">
+	
+	<select id="memberList2" resultType="member">
+	select
+		*
+	from
+		member
+	where id like '%' ||  #{value} || '%' or name like '%' ||  #{value} || '%'
+	</select>
+	
+	<select id="chatRoomCheck" resultType="chatroom">
 	select 
 		* 
 	from 
-		chat 
+		chat_room 
 	where 
-		room_no in (select distinct room_no from chat where member_id = #{loginId}) 
-	and 
-		member_id = #{memberId}
+		members like '%' ||  #{loginId} || '%' and members like '%' ||  #{memberId} || '%'
+		and room_type = 0
 	</select>
 	<insert id="createChatRoom">
 	insert 
 		into 
-	chatroom 
+	chat_room 
 		values(
-		SEQ_CHAT_NO.nextval,
-		#{loginId}
+		seq_chatroom_no.nextval,
+		default,
+		default,
+		default,
+		#{members},
+		default
 		)
 	</insert>
+	<insert id="insertEnterMessage">
+	insert
+		into
+	chat
+		values(#{roomNo},#{loginId},'ROOMENTER',default,#{loginId},default)
+	</insert>
+	
+	<insert id="insertEnterMessage2">
+	insert
+		into
+	chat
+		values(#{roomNo},#{memberId},'ROOMENTER',default,#{memberId},default)
+	</insert>
+	
+	<insert id="insertShareMessage">
+	insert
+		into
+	chat
+		values(#{roomNo},#{loginId},
+		'share115@'||#{loginId}||'님이 예약을 공유했습니다.@'||#{reservationNo},
+		default,
+		default,
+		default)
+	</insert>
+	
+	<select id="selectGroupRoomNo" resultType="_int">
+	select
+		room_no
+	from
+		chat_room
+	where group_room_id = #{groupId}
+	</select>
+	
+	<!-- group membercount에 roomNo넣었음 소모임 만든사람 insertmessage-->
+	<insert id="insertGroupMessage">
+	insert
+		into
+	chat
+		values(#{roomNo},#{group.leaderId},'ROOMENTER',default,#{group.leaderId},default)
+	</insert>
+	
+	<!-- 소모임 가입 회원 입장메세지 -->
+	<insert id="insertGroupMessage22">
+	insert 
+		into 
+	chat 
+		values(
+		(select room_no from chat_room where group_room_id = #{groupId}), 
+		#{memberId},
+		'ROOMENTER',
+		default,
+		#{memberId},
+		default
+		)
+	</insert>
+	
+	<update id="updateROOMOUTmessage">
+	update 
+		chat
+	set message = 'ROOMOUT333'
+	where room_no = (select room_no from chat_room where group_room_id = #{groupId})
+	and
+	member_id = #{memberId}
+	</update>
+	
+		<insert id="CreateGroupChat">
+	insert
+		into
+	chat_room
+		values(
+		seq_chatroom_no.nextval,
+		#{groupName},
+		1,
+		#{groupId},
+		null,
+		#{image}
+		)
+	</insert>
+	
+	<insert id="GroupRoomOutMessage">
+	insert 
+		into 
+	chat 
+		values(
+		(select room_no from chat_room where group_room_id = #{groupId}),
+		#{memberId},
+		'ROOMOUT',
+		default,
+		default,
+		default
+		)
+	</insert>
+	
+	<select id="findRoomNo" resultType="_int">
+	select
+		room_no
+	from
+		chat_room
+	where
+	members like '%' ||  #{loginId} || '%' and members like '%' ||  #{memberId} || '%'
+	</select>
+	<select id="selectOneChatRoom" resultType="chatroom">
+	select
+		*
+	from
+		chat_room
+	where room_no = #{no}
+	</select>
+
+	<delete id="exitRoom">
+	delete
+		from
+	chat_room
+		where room_no = #{roomNo}
+	</delete>
+	<select id="selectListReceiver" resultType="string">
+	select 
+		distinct member_id 
+		from 
+	chat 
+		where 
+	room_no = #{roomNo} 
+		and 
+	member_id != #{memberId}
+	and
+	member_id not in (select member_id from chat where room_no = #{roomNo} and message = 'ROOMOUT')
+	</select>
+	
+	<select id="dmalarm" resultType="_int">
+	select 
+		count(*) 
+	from 
+		chat 
+	where 
+		room_no in (select room_no from chat where member_id = #{id}) 
+	and 
+		unreadcount not like '%'||#{id}||'%'
+	</select>
+	<select id="roomUnreadChat" resultType="_int">
+	select 
+		count(*) 
+	from 
+		chat 
+	where room_no = #{roomNo} 
+	and 
+		unreadcount not like '%'||#{memberId}||'%'
+	</select>
+	
+	
+	
+	
+	<!-- main 페이지 -->
+	<select id="selectListGroupBoard" resultType="groupBoard">
+	select
+	 *
+	 from(
+	 		select
+	         row_number() over(order by g.reg_date desc) rnum,
+				g.*,
+				m.picture writer_profile,
+				(select group_name from group_ where group_id = g.group_id) group_name,
+            	(select image from group_ where group_id = g.group_id) group_image
+			from
+				group_board g join member m
+				on g.writer = m.id
+			where
+				g.group_id in ( select group_id from group_member_list where member_id = #{memberId}) and g.writer != #{memberId}
+	) where rnum <![CDATA[<=]]> 3
+	</select>
+	
+	<select id="selectListMemberBoard" resultType="board">
+	 select
+	 *
+	 from(
+	 		select
+	         row_number() over(order by b.reg_date desc) rnum,
+				b.*,
+				m.picture writer_profile
+			from
+				board b join member m
+				on b.writer = m.id
+			where 
+				b.writer in (select member_id from follower where following_id = #{memberId})
+	) where rnum <![CDATA[<=]]> 3
+	</select>
+	
+	<select id="followingRecommendList" resultType="member">
+	 select
+	 	id, picture, name
+	 from
+		member
+	where
+		id in(
+	select distinct following_id from follower where member_id = #{memberId}) 
+	and 
+		id not in (select distinct member_id from follower where following_id = #{memberId})
+	</select>
+	
+	<select id="groupRecommendList" resultType="member">
+	select
+	 id, picture
+	 from
+	 member
+	 where
+	 id in (
+	 select distinct member_id from group_member_list where group_id in (select group_id from group_member_list where member_id =#{memberId}) and member_id != #{memberId} and member_id not in (select member_id from follower where following_id = #{memberId}))	
+	</select>
+	
+	<!-- 바꾸기 -->
+	<select id="selectOnegroupBoardComment" resultType="GroupBoardComment">
+	select 
+		* 
+	from 
+		board_comment
+	where 
+		reg_date = (select max(reg_date) from board_comment)
+	</select>
+	
+	<!-- 바꾸기 -->
+	<select id="selectOneMemberBoardComment" resultType="BoardComment">
+	select 
+		* 
+	from 
+		board_comment 
+	where 
+		reg_date = (select max(reg_date) from board_comment)
+	</select>
+	
+	<insert id="insertNoti">
+	insert 
+		into
+	noti
+	values(#{ReceiverId},
+	#{msg},
+			<choose>
+				<when test="boardNo eq 0">
+					null,
+				</when>
+				<otherwise>
+					#{boardNo},
+				</otherwise>
+			</choose>
+	#{boardType},
+	#{idORwriter},
+	default)
+	</insert>
+	
+	<select id="notiAlarm" resultType="noti">
+	select 
+		* 
+	from 
+		noti 
+	where
+		member_id =#{id}
+	</select>
+
+	<delete id="notiReadCheck">
+	delete
+		from
+	noti
+		where member_id = #{id}
+	</delete>
+	
+	<select id="checkMemberGroup" resultType="Integer">
+	select 
+		distinct room_no
+	from 
+		chat 
+	where 
+		room_no=(select room_no from chat_room where group_room_id = #{groupId}) 
+		and 
+		member_id = #{loginId}
+	</select>
+	
+	<update id="roomChatUpdateImage">
+	update
+		chat_room
+	set 
+		group_img = #{image}
+	where 
+		group_room_id = #{groupId}
+	</update>
+	<update id="roomChatUpdate">
+	update
+		chat_room
+	set 
+		group_img = #{image},
+		room_name = #{groupName}
+	where 
+		group_room_id = #{groupId}	
+	</update>
+	
+	<select id="mostPopularMember" resultMap="moestPopluarFollower">
+	select
+	x.*,(select picture from member where id=x.id) picture, (select name from member where id=x.id) name
+	from(
+	select m.id, count(*) count from member m left join follower f on m.id = f.member_id group by m.id order by count(*) desc
+	) x where rownum between 1 and 5
+	</select>
+		<resultMap type="map" id="moestPopluarFollower">
+		<id column="id" property="memberId"/>
+		<result column="count" property="count"/>
+		<result column="picture" property="picture"/>
+		<result column="name" property="name"/>
+	</resultMap>
 
 </mapper>

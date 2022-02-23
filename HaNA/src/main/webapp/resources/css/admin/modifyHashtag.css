@@ -1,0 +1,40 @@
+@charset "UTF-8";
+.add-hashtag-box {
+	padding-left:100px;
+}
+.add-hashtag-box span{
+	font-size:1.6em;
+	font-weight:500;
+}
+
+.add-hashtag-box input[type=text]{
+	font-size:1.2em;
+	height:70px;
+	width:270px;
+	border:none;
+}
+
+.add-hashtag-box input[type=button]{
+	border:none;
+	background:white;
+	color:gray;
+	font-size:1.2em;
+	font-weight:450;
+}
+.hashtag-box {
+	padding-left:100px;
+	margin-top:100px;
+}
+.hashtag-box .name{
+	font-size:1.5em;
+	border:500;
+}
+.hashtag-box .delete-btn {
+	color:red;
+}
+
+.hashtag-box .delete-btn:hover {
+	cursor:pointer;
+}
+
+

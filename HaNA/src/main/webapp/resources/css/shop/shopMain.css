@@ -11,6 +11,7 @@
 #hashTagRankTitle{
 	font-size: 25px;
 	text-align:center;
+	color: #57585a !important;
 }
 
 .searchArea{
@@ -26,12 +27,12 @@
 
 .shopRank div{
 	height: 300px;
-	border: 1px solid white;
+	border: 1px solid #f9fafb;
+    background-color: #8e709f;
 }
 .shopProfile.d-flex{
 	width:150px;
 	height:150px;
-	border:1px solid black;
 	border-radius:100%;
 }
 .shopProfileImg{
@@ -39,9 +40,236 @@
 	height:100%;
 	border-radius:100%;
 }
-
-
 .shopList div{
-	height: 300px;
-	border: 1px solid white;
+	 height: 300px;
+	 border: 1px solid #afb7bf;
+
 }
+.searchResultArea {
+	height: 70px;
+	border: 1px solid black;
+}
+.hashTagResult {
+	float:left;
+	width: 70%;
+	height: 100%;
+}
+ #searchBtn {
+	width: 30%;
+    float: right;
+    color: #d7aa22;
+    border: 1px solid;
+    border-color: #41464b;
+} 
+#searchBtn:hover{
+	color: #f9fafb;
+	background-color: #ecb61f;
+}
+.shopScroll{
+	color: #41464b;
+	font-weight: 800;
+}
+.rankingTop3{
+	color: #dee2e6;
+}
+.mb-4{
+	color: #dee2e6;
+	font-weight: 800;
+	margin-bottom: 10px !important;
+	
+}
+.shopCrownImg{
+	width: 30px;
+	margin: 5px;
+	position: relative; 
+	bottom: 3px;
+}
+.shopNameImg{
+	width: 30px; 
+	height: 28px; 
+	margin: 3px 5px 0px 0px; 
+	padding: 3px; 
+	position: relative; 
+	bottom: 5px;
+}
+.shopAddresseImg{
+	width: 26px; 
+	height: 25px;
+	margin: 3px;
+	position: relative;
+	bottom: 2px;
+}
+.shopHashTagImg{
+	width: 18px; 
+	height:17px; 
+	margin: 4px 4px; 
+	position: relative; bottom: 2px;
+}
+.shopSearchImg{
+	width: 18px; 
+	height: 17px; 
+	margin: 3px 3px; 
+	position: relative; 
+	bottom: 3px;
+}
+.shopRankingImg{
+	width: 28px; 
+	height: 28px; 
+	position: relative; 
+	bottom: 2px;
+}
+.shopRankingNumberImg{
+	width: 30px; 
+	height: 28px; 
+	margin: 3px 6px 0px 0px; 
+	padding: 0px; 
+	position: relative; 
+	bottom: 5px;
+	right: 13px;
+}
+.radioStyle{
+	position: relative; 
+	top: 50px;
+}
+.radioStyle input[type="radio"]{
+	position: absolute; 
+	width: 1px;
+	height:1px; 
+	margin:-1px; 
+	overflow: hidden; 
+	clip: rect(0,0,0,0); 
+} 
+.radioStyle input[type="radio"] + label{ 
+	display: inline-block; 
+	position: relative; 
+	padding-left: 26px; 
+	cursor: pointer;} 
+.radioStyle input[type="radio"] + label:before{ 
+	content:''; 
+	position: absolute; 
+	left: 0; 
+	top: 3px; 
+	width: 18px; 
+	height: 18px; 
+	text-align: center; 
+	background: #fff; 
+	border: 1px solid #ccc;  
+	border-radius: 50%;
+}
+.radioStyle input[type="radio"]:checked + label:after{
+	content: ''; 
+	position: absolute; 
+	top: 3px; 
+	left: 0; 
+	width: 18px; 
+	height: 18px; 
+	background-color: #a473c2; 
+	border-radius: 50%;
+}
+.radioStyle input[type="radio"]:checked + label{
+ 	color: #be91da;
+}
+.lableStyle{
+	color:#41464b; 
+	margin: 0px 5px 2px 5px;
+}
+#rankingTrColor{
+	color:#ffc107;
+	text-align: center;
+}
+.rankingThColor{
+	color:#212529;
+	text-align: center;
+}
+.tagClick{
+	text-align: center;
+	color: #212529;
+}
+
+.table {
+	border: 1px #adb5bd !important;
+}
+#thNo{
+	border-left: 1px solid  #adb5bd;
+	background-color: #212529;
+	border-bottom: 1px solid #adb5bd;
+
+}
+#thNo2{
+	background-color: #212529;
+	border-bottom: 1px solid #adb5bd;
+
+}
+#thNo3{
+	background-color: #212529;
+	border-bottom: 1px solid #adb5bd;
+
+}
+#thNo4{
+	background-color: #212529;
+    border-right: 1px solid #adb5bd;
+    border-bottom: 1px solid #adb5bd;
+ 
+}
+#rankingThColor_1{
+    background-color: #f0f0f0 ;
+    border-left: 1px solid #adb5bd;
+    box-shadow: none !important;
+    border-bottom: none;
+}
+#rankingThColor_2{
+    background-color: #f0f0f0;
+    border-left: 1px solid #adb5bd;
+    border-bottom: none;
+}
+#rankingThColor_3{
+    background-color: #f0f0f0 ;
+    box-shadow: none !important;
+    border-left: 1px solid #adb5bd;
+    border-bottom: none;
+}
+#rankingThColor_4{
+    background-color: #f0f0f0;
+    border-left: 1px solid #adb5bd;
+    border-bottom: 1px solid #adb5bd;
+}
+.tagClick{
+    background-color: #ffffff !important ;
+    color: #212529;
+    box-shadow: none !important;
+    border-bottom: none;
+}
+#toDayFourthTagRanking{
+	border-bottom: 1px solid #adb5bd ;
+}
+#weekFourthRanking{
+	border-bottom: 1px solid #adb5bd ;
+}
+#monthFourthRanking{
+	border-bottom: 1px solid #adb5bd ;
+	border-right:1px solid #adb5bd ;
+}
+#monthFirstRanking{
+	border-right:1px solid #adb5bd ;
+}
+#monthSecondRanking{
+	border-right:1px solid #adb5bd ;
+}
+#monthThirdRanking{
+	border-right:1px solid #adb5bd ;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

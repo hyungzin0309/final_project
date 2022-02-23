@@ -8,10 +8,8 @@
 		select
 		    *
 		from
-		    member m left join personality p
-		    on m.id = p.member_id
-		    left join interest i
-		    on p.member_id = i.member_id
+		    member m left join authority a
+		    on m.id = a.member_id
 		where
 			id = #{username}
 	</select>
@@ -22,12 +20,73 @@
 		<result column="name" property="name"/>
 		<result column="picture" property="picture"/>
 		<result column="personal_id" property="personalId"/>
-		<result column="address_first" property="addressFirst"/>
-		<result column="address_second" property="addressSecond"/>
-		<result column="address_third" property="addressThird"/>
+		<result column="account_type" property="accountType"/>
 		<result column="address_full" property="addressFull"/>
+		<result column="address_all" property="addressAll"/>
+		<result column="introduce" property="introduce"/>
 		<result column="enabled" property="enabled"/>
-		<result column="personality" property="personality"/>
-		<result column="interest" property="interest"/>
+		<result column="location_x" property="locationX"/>
+		<result column="location_y" property="locationY"/>
+		
+		<collection property="authorities" ofType="org.springframework.security.core.authority.SimpleGrantedAuthority">
+			<constructor>
+				<arg column="authority" javaType="String"/>
+			</constructor>
+		</collection>
 	</resultMap>
+	
+	<select id="selectUserReportCount" parameterType="string" resultType="int">
+		select
+		    count(*)
+		from
+		    report_history
+		where
+		    id = #{username}
+		    and
+		    status = 'N'
+	</select>
+	
+	<delete id="deleteUserRole" parameterType="string">
+		delete from authority
+		where
+		    member_id = #{username}
+		    and
+		    authority = 'ROLE_USER'
+	</delete>
+	
+	<select id="selectUserRestrictCount" parameterType="string" resultType="int"> 
+		select
+			count(*)
+		from
+			user_restricted
+		where
+			restricted_date > sysdate
+			and
+			id = #{id}
+	</select>
+	
+	<select id="selectUserRoleCount" parameterType="string" resultType="int">
+		select
+		    count(*)
+		from
+		    authority
+		where
+		    member_id = #{username}
+		    and
+		    authority = 'ROLE_USER'
+	</select>
+	
+	<insert id="insertUserRole" parameterType="string">
+		insert into authority
+		values(#{username}, 'ROLE_USER')
+	</insert>
+	
+	<update id="updateReportHistoryS2Y" parameterType="string">
+		update report_history
+		set status = 'Y'
+		where
+			id = #{username}
+			and
+			status = 'S'
+	</update>
 </mapper>

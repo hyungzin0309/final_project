@@ -29,8 +29,13 @@
 	
 	<context:component-scan base-package="com.kh.hana" />
 	
-	<!-- interceptor 사용 시 주석해제하고 사용하세요 -->
-	<!-- <interceptors></interceptors> -->
+	<!-- interceptor -->
+	<interceptors>
+		<interceptor>
+			<mapping path="/mbti/mbti.do"/>
+			<beans:bean class="com.kh.hana.common.interceptor.MemberMbtiInterceptor" id="memberMbtiInterceptor"/>
+		</interceptor>
+	</interceptors>
 	
 	<!-- jsonView bean -->
 	<beans:bean id="jsonView" class="net.sf.json.spring.web.servlet.view.JsonView">
@@ -43,6 +48,7 @@
 	
 	<!-- file Upload bean -->
 	<beans:bean class="org.springframework.web.multipart.commons.CommonsMultipartResolver" id="multipartResolver">
+		<beans:property name="defaultEncoding" value="UTF-8"/>
 		<beans:property name="maxUploadSize" value="52428800"/> <!-- 한 요청당 최대 업로드 크기 : 50mb(50 * 1024 * 1024) -->
 		<beans:property name="maxUploadSizePerFile" value="10485760"/> <!-- file 1개당 최대 업로드 크기 -->
 	</beans:bean>

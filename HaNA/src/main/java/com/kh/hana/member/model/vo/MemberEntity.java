@@ -22,12 +22,12 @@ public class MemberEntity implements Serializable{
 	private String picture;
 	private String personalId;
 	private int accountType;
-	private String addressFirst;
-	private String addressSecond;
-	private String addressThird;
 	private String addressFull;
+	private String addressAll;
 	private String introduce;
 	private boolean enabled;
+	private String locationX;
+	private String locationY;
 	
 
 }

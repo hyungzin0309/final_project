@@ -1,0 +1,400 @@
+@charset "UTF-8";
+
+
+/* 그룹 게시물 */
+.group-board-container{
+	width:60%;
+	margin:auto;
+	margin-bottom:300px;	
+}
+.location-group-board-container {
+	width:60%;
+	margin:auto;
+	margin-bottom:300px;	
+	margin-top:100px;
+}
+
+.board-main-image:hover {cursor:pointer;}
+#myInfo {}
+#profileImg {height: 400px; }
+#profileStatus {height: 400px;}
+/* 세팅 버튼 */
+#settingBtn {float: right;height: 50px;width: 50px;border-radius: 100%;border: none;}
+#settingBtn img {width: 130%;}
+/* 프로필이미지 */
+.profileImg.d-flex {width: 230px;height: 230px;border-radius: 100%;}
+.profileImg img {width: 80%;height: 80%;border-radius: 100%;display: inline-block;position: relative;top: 10%;left: 60%;}
+.profileBtn {border: 1px solid black;width: 50px;height: 50px;border-radius: 100%;transform: translateX(200px) translateY(-80px);z-index: 1;background-color: white;}
+.profileBtn img {width: 100%;border-radius: 100%;}
+/* 프로필정보 */
+.follow {display: inline-block;width: 100px;height: 30px;border: 1px solid black;}
+.followCount {display: inline-block;width: 100px;height: 30px;border: 1px solid black;}
+.profileTableAreaContainer {width:100%;height:100%;display: flex;align-items: center;}
+.profileTableArea {margin-left:0;}
+#profileTable {width: 100%;table-layout: fixed; border-collapse: separate;border-spacing: 0 10px;}
+#tagMemberListTable {border-collapse: separate;border-spacing: 0 5px;}
+#groupMemberListTable {border-collapse: separate;border-spacing: 0 30px; margin-left:20%;}
+#groupMemberListTableContainer {height:50vh;overflow:auto; padding-top:20px; padding-bottom:30px;}
+.memberCountTr:hover{cursor:pointer;}
+.tableKey {width: 40%;}
+.tableValue {width: 60%;}
+pre {margin: 0;}
+#textArea {width: 100%;height: 150px;border: none;resize: none;background-color: white;padding-top: 30px;font-size: 16px;}
+.buttonArea {}
+
+.table-light th {min-width:70px;}
+.applyListTableContainer{overflow:auto; height:70vh;}
+.icon {width:60%;border-bottom:1px solid gray; border-top:1px solid gray; margin:auto; margin-bottom:150px;}
+table {border-collapse: separate;border-spacing: 0 5px;}
+textarea { height:100px;border:none;width:100%;resize:none; }
+textarea:focus { outline:none; }
+.btn-submitContent{font-weight:bold;color:#384fc5c4;background-color:white;border:none;float:right;}
+.btn-boardModify{font-weight:bold;color:#8080808a;background-color:white;border:none;float:right;}
+.btn-reply{font-weight:bold;color:#8080808a;background-color:white;border:none;float:right;}
+input[type="submit"] {font-weight:bold;color:#384fc5c4;background-color:white;border:none;float:right;}
+.btn-deleteBoard {font-weight:bold;color:#f44336bd;background-color:white;border:none;}
+textarea::placeholder {color:gray; font-size: 1.1em;}
+.level2 td:nth-child(1),.level2 td:nth-child(2){padding-left:13px;}
+.btn-boardCommentDelete {padding-left:5px;color:#8080808a;font-weight:bold;}
+.btn-boardCommentDelete:hover {cursor:pointer;}
+
+/* 캘린더페이지 */
+.calendarPage-container{
+	min-height:1700px;
+	width:70%;
+	margin:auto;
+}
+.calendarPage-container a {
+	color:black;
+	text-decoration:none;
+}
+.external-events-container-container {
+	float:left;
+	margin-right:2%;
+	width:13%;
+}
+#calendar-container {
+	float:left;
+	width:84%;
+}
+.external-events-container {
+	border:1px solid gray;
+	margin-top:100px;
+	padding:10px;
+}
+#external-events .fc-event{
+	margin-bottom:5px;
+	text-align:center;
+}
+.calendarSaveBtnContainer {
+	padding:0 10px;
+	margin-top:100px;
+	text-align:center;
+}
+.calendarSave {
+	display:block;
+	margin-top:5px;
+	width:100%;
+	background-color:#3788d8;
+	border:1px solid white;
+	color:white;
+}
+#eventTitleInput {
+	height:50px;
+	resize:none;
+	width:100%;
+	border:none;
+}
+#createEventButton{
+	float:right;
+	font-weight:bold;
+	color:#384fc5c4;
+	background-color:white;
+	border:none;
+}
+/* 그룹리스트 */
+.group-list-section {
+padding-top:100px; width: 30%; min-height: 500px; margin: auto; margin-bottom:200px;
+}
+.group-container:hover {
+	cursor:pointer;
+	
+}
+.group-container {
+width:100%;
+height:100px;
+}
+.group-container-section1 {
+text-align:center;width:40%; height:100%; display: inline-block;
+}
+.group-profile-container{
+margin-left:40%;width: 80px; height: 80px; position: relative;
+}
+.group-modal-profile-container {
+	margin-left:20%;width: 80px; height: 80px; position: relative;
+}
+#group-profile {
+ top: 0; left: 0; width: 100%; height: 100%; border-radius: 50%;
+}
+.group-container-section2 {
+width:59%; height:100%; display: inline-block;
+}
+.group-list-info-container {
+margin-top:12px;
+}
+.recommend-group-list-info-container {
+margin-top:0;
+}
+.group-list-groupId {
+font-size:1.1em;
+font-weight:700;
+}
+.group-list-groupName {
+font-size:1.1em;
+}
+.group-list-hashtag {
+	color:#6262d0;
+}
+.plusHashtagButton-container, .plusBoardButton-container {
+	width:250px;
+	position:fixed;
+	left:85vw;
+	top:300px;
+}
+.plusGroupButton-container {
+	width:250px;
+	position:fixed;
+	left:85vw;
+	top:390px;
+}
+.groupRankingButton-container {
+	width:250px;
+	position:fixed;
+	left:85vw;
+	bottom:190px;
+}
+.groupListModalButton-container {
+	width:250px;
+	position:fixed;
+	left:85vw;
+	bottom:100px;
+}
+.plusGroupButton, .plusHashtagButton, .plusBoardButton, .groupListModalButton, .groupRankingButton{
+	width:55px;
+	height:55px;
+}
+.plusHashtagButton-container , .plusGroupButton-container, .plusBoardButton-container, .groupListModalButton-container, .groupRankingButton-container:hover{
+	cursor:pointer;
+}
+.plusButtonLabel {
+	color:gray;
+	font-weight:500;
+}
+.group-board-thumbnail-container {
+	width:90%; height:90%;margin:auto;
+}
+.board-main-image {
+	width:100%; height:100%;margin-bottom: 10%
+	
+}
+
+/* 장소검색페이지 */
+.location-container{
+	padding-left:100px;
+	border-bottom:1px solid gray;
+	margin:auto;
+	width:75%;
+	height:500px;
+	padding-top:100px;
+	padding-bottom:100px;
+}
+.info-container {
+	width:80%;
+	height:100%;
+	margin:auto;
+}
+
+#loca-info {
+	width:100%;
+	height:40%;
+	margin-top:33%;
+	padding-left:20%;
+}
+
+#locaInfo-placeName {
+	font-size:1.2em;
+	font-weight:bold;
+}
+#locaInfo-placeAddress {
+	font-size:1.2em;
+
+	color:gray;
+}
+/* 해시태그 모달 */
+#image-container {
+	width:350px;
+	height:350px;
+	margin:auto;
+	margin-top:50px;
+}
+.first-container {
+margin-top:200px;
+padding-left:400px;
+}
+.hashtag-modal-label {
+font-size:1.1em;
+font-weight:500;
+color:#875bd5;
+}
+.hashtag-modal-label:hover {
+cursor:pointer;
+}
+
+.hashtag-container {
+font-size:1.3em;
+margin-top:10px;
+}
+.hashtag-list-container {
+	width: 60%;
+	
+	margin:auto;
+	margin-bottom:20px;
+}
+.pointer:hover {
+	cursor:pointer;
+}
+.no-group-msg{
+	font-size:1.5em;
+	text-align:center;
+	
+}
+
+.no-recommended-msg, .no-ranking-msg {
+	margin-top:50px;
+	font-size:1.2em;
+	text-align:center;
+}
+
+/* 게시물 상세보기 옆으로 넘기기 */
+.board-img-move {
+	width:50px;
+	height:50px;
+}
+.img-move-button-container {
+	position:absolute;z-index:3; width:100%; left:0px;
+}
+.right-button {
+	float:right;
+}
+.right-button:hover, .left-button:hover {
+	cursor:pointer;
+}
+
+
+/* 그룹 정보 수정 */
+
+.form-control:focus {
+    box-shadow: none;
+    border-color: #BA68C8
+}
+
+.back:hover {
+    color: #682773;
+    cursor: pointer
+}
+
+.labels {
+    font-size: 1em;
+}
+
+.add-experience:hover {
+    background: #BA68C8;
+    color: #fff;
+    cursor: pointer;
+    border: solid 1px #BA68C8
+}
+
+
+/* 그룹생성 */
+.idDupl-msg {
+	color:red;
+	display:none;
+	
+}
+
+.hashtag {
+	color:#6262d0;
+}
+.hashtag:hover {
+	cursor:pointer;
+}
+
+/*그룹통계*/
+.statistic-page-label{
+text-align:center;
+margin-top:7vh;
+height:10vh;
+}
+.statistic-container {
+border-top:1px solid gray;
+width:55%;
+min-height:1000px;
+margin:auto;
+margin-bottom:10%;
+}
+.select-graph-box-container {
+padding:50px;
+}
+.statistic-select-box {
+	width:100px;
+	height:35px;
+	text-align:center;
+}
+.graph-memberId {
+text-align:right;
+font-weight:bold;
+}
+.graph-bar {
+margin-top:10px;display:inline-block; background-color:#607d8b; height:50%;
+}
+.graph-bar-container {
+width:80%; height:40px; color:gray; font-weight:400;
+}
+
+.group-profile.leader-id:hover{
+	cursor:pointer;
+}
+
+/* 그룹 랭킹 */
+.group-ranking-select-container {
+	display:block;
+	margin-bottom:20px;
+	padding:0px 10px;
+}
+.group-ranking-select-container select{
+	border:none;
+	float:right;
+	color:gray;
+	font-size:1.1em;
+	font-weight:500;
+}
+.group-ranking-select-container select:focus{
+	outline:none;
+}
+.group-ranking-select-container .select-category.container span{
+	color:gray; font-weight:500; font-size:1.1em;
+}
+.group-ranking-select-container .select-category.container span:hover{
+	cursor:pointer;
+}
+
+#pagebar-box a {
+	text-decoration: none;
+	color:black;
+}
+.cpage {
+	color:red;
+}
+#pagebar-box:hover {
+	cursor:pointer;
+}

@@ -1,6 +1,6 @@
 
-# Created by https://www.toptal.com/developers/gitignore/api/java,eclipse,windows,macos,maven
-# Edit at https://www.toptal.com/developers/gitignore?templates=java,eclipse,windows,macos,maven
+# Created by https://www.toptal.com/developers/gitignore/api/macos,windows,eclipse,java,maven,web
+# Edit at https://www.toptal.com/developers/gitignore?templates=macos,windows,eclipse,java,maven,web
 
 ### Eclipse ###
 .metadata
@@ -14,6 +14,8 @@ local.properties
 .settings/
 .loadpath
 .recommenders
+.classpath
+.project
 
 # External tool builders
 .externalToolBuilders/
@@ -142,6 +144,21 @@ buildNumber.properties
 # JDT-specific (Eclipse Java Development Tools)
 .classpath
 
+### Web ###
+*.asp
+*.cer
+*.csr
+*.css
+*.htm
+*.html
+*.js
+*.jsp
+*.php
+*.rss
+*.wasm
+*.wat
+*.xhtml
+
 ### Windows ###
 # Windows thumbnail cache files
 Thumbs.db
@@ -168,11 +185,4 @@ $RECYCLE.BIN/
 # Windows shortcuts
 *.lnk
 
-# datasource.properties
-src/main/resources/datasource.properties
-
-<!-- # sql
-*.sql -->
-
-# End of https://www.toptal.com/developers/gitignore/api/java,eclipse,windows,macos,maven
-/sql/
+# End of https://www.toptal.com/developers/gitignore/api/macos,windows,eclipse,java,maven,web

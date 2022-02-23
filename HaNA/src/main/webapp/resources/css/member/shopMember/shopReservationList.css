@@ -1,0 +1,53 @@
+@charset "UTF-8";
+
+#reservationTable{
+	border-collapse: collapse;
+	margin-top: 15px;
+}
+#reservationTable th{
+	text-align: center;
+	border: 1px solid black;
+}
+#reservationTable td{
+	border: 1px solid black;
+}
+
+.res-dateBtn{
+	width: 100%;
+	background-color: white;
+	border: none;
+}
+#listModal1{
+	margin-top:100px;
+
+}
+#res-list-closeBtn{
+	background-color: white;
+	border:none;
+}
+
+#res-list-closeBtn:hover{
+	background-color: gray;
+}
+
+#reservation-count-all{
+	font-size: 20px;
+}
+.res-count-title{
+	margin-top: 10px;
+	margin-left: 10px;
+	margin-bottom: 10px;
+}
+#resCount{
+	width: 25px;
+	display:inline-block;
+	text-align: center;
+	font-weight: bold;
+}
+#dailyResCount{
+	width: 25px;
+	display:inline-block;
+	text-align: center;
+	font-weight: bold;
+	background-color:yellow;
+}

@@ -29,11 +29,16 @@
 			<param-name>contextConfigLocation</param-name>
 			<param-value>
 				/WEB-INF/spring/appServlet/servlet-context.xml
-				/WEB-INF/spring/appServlet/aspect-context.xml
+				/WEB-INF/spring/appServlet/aspect-context.xml				
 			</param-value>
 		</init-param>
 		<load-on-startup>1</load-on-startup>
+		<!-- <multipart-config>
+			<max-file-size>10485760</max-file-size>
+			<max-request-size>34228800</max-request-size>
+		</multipart-config> -->
 		<async-supported>true</async-supported>
+		
 	</servlet>
 		
 	<servlet-mapping>
@@ -60,6 +65,20 @@
   	</filter-mapping>
   	
 	<!-- spring security filter -->
+	<!-- <filter>
+	    <display-name>springMultipartFilter</display-name>
+	    <filter-name>springMultipartFilter</filter-name>
+	    <filter-class>org.springframework.web.multipart.support.MultipartFilter</filter-class>
+	    <init-param>
+	    	<param-name>multipartResolverBeanName</param-name>
+	    	<param-value>multipartResolver</param-value>
+	    </init-param>
+	</filter>
+	<filter-mapping>
+	    <filter-name>springMultipartFilter</filter-name>
+	    <url-pattern>/*</url-pattern>
+	</filter-mapping> -->
+
 	<filter>
 		<filter-name>springSecurityFilterChain</filter-name>
 		<filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
@@ -68,5 +87,6 @@
 		<filter-name>springSecurityFilterChain</filter-name>
 		<url-pattern>/*</url-pattern>
 	</filter-mapping>
+	
 
 </web-app>

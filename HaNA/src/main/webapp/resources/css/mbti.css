@@ -1,96 +1,264 @@
 @charset "UTF-8";
-
 #mbtiMain-Background {
-	width: 50%;
-	height: 100%;
-	background-color: #212529 !important;
-	text-align: center;
-	margin: auto;
-	border-radius: 40px 0;
+    width: 60%;
+    height: 400px;
+    background: rgb(250, 208, 201) !important;
+    text-align: center;
+    margin: auto;
+    position: absolute;
+    top: 40%;
+    left: 20%;
+    border: 6px ridge;
 }
+#mbtiResult-Background {
+    width: 60%;
+    height: 400px;
+    background: rgb(250, 208, 201) !important;
+    text-align: center;
+    margin: auto;
+    position: absolute;
+    top: 40%;
+    left: 20%;
+    border: 6px ridge;
+}
+#mbtiList-Background {
+    background: #e9ecef;
+    text-align: center;
 
-#mainPage-h1 {
-	color: #ffffff;
-	padding: 2%;
 }
+#mainPage-h1 {
+  	color: rgb(255 222 89);
+    padding: 2%;
+    z-index: 1;
+    position: relative;
+    bottom: 350px;
+    right: 20px;
+    text-shadow: 4px 4px 2px #6c757d;
+}
+    
 
 #mainPage-button {
-	margin: 2%;
-	background-color: #ffe15a;
-}
-
-#mbtiList-Background {
-	width: 50%;
-	height: 100%;
-	background-color: #212529 !important;
-	text-align: center;
-	margin: auto;
-	border-radius: 40px 0;
+    margin: 2%;
+ 	background-color: rgb(25 93 126);
+    color: rgb(255 222 89);
+    border-radius: 50%;
+    display: block;
+    margin:auto;
+    position: relative;
+    z-index: 1;
+    bottom: 210px;
+    left: 100px;
 }
 
 #mbtiListPage-ul {
-	color: #ffffff;
-	list-style: none;
+    color: rgb(110, 110, 109);
+    list-style: none;
+    position: relative;
+    bottom: 530px;
+   left: 80px;
 }
-
 .mbtiListPage-p {
-	display: block;
-	color: #ffffff;
+    display: block;
+    color: rgb(110, 110, 109);
+    font-weight: 600;
+    padding-top:10px;margin-bottom:10px;
 }
-
-#mbtiListPage-buttonPrev {
-	margin: 2%;
-	background-color: #ffe15a;
-	text-align: left;
-}
-
 #mbtiListPage-buttonNext {
-	margin: 2%;
-	background-color: #ffe15a;
-	text-align: right;
+    margin: 2%;
+    background-color:#195d7e;
+    color:#ffde59;
+    border-radius: 40px 20px 80px 60px;
+    position: relative;
+    z-index: 1;
+    bottom: 580px;
+ 	left: 360px
 }
-
-.mbtiListPage-shapes {
-	margin-right: 10px;
-	margin-left: 10px;
+.cb1,
+.cb2 {
+  height: 20px;
+  width: 20px;
+  background-color: transparent;
+  border: 2px solid #fff;
+  border-radius: 5px;
+  box-sizing: border-box;
+  position: relative;
+  display: inline-block;
+  transition: border-color ease 0.2s;
+  cursor: pointer;
+  border-radius: 50%;
 }
-
-#mbtiListPage-buttonPrev {
-	border-radius: 20px 40px 60px 80px;
+.cb1::before, .cb1::after,
+.cb2::before, .cb2::after {
+  position: absolute;
+  height: 0;
+  width: 4px;
+  background-color: #ffc107;
+  box-sizing: border-box;
+  display: inline-block;
+  transform-origin: left top;
+  border-radius: 5px;
+  content: ' ';
+  transition: opacity ease 0.5;
 }
-
-#mbtiListPage-buttonNext {
-	border-radius: 40px 20px 80px 60px;
+.cb2::before, .cb2::after {
+  background-color: #ffc107;
 }
-
-#shapes_1, #shapes_7 {
-	width: 40px;
-	height: 40px;
-	margin-right: 10px;
-	margin-left: 10px;
+.cb1::before,
+.cb2::before {
+  top: 14.4px;
+  left: 8.2px;
+  box-shadow: 0 0 0 1px transparent;
+  transform: rotate(-135deg);
 }
-
-#shapes_2, #shapes_6 {
-	width: 30px;
-	height: 30px;
-	margin-right: 10px;
-	margin-left: 10px;
+.cb1::after,
+.cb2::after {
+  top: 7.4px;
+  left: 1px;
+  transform: rotate(-45deg);
 }
-
-#shapes_3, #shapes_5 {
-	width: 20px;
-	height: 20px;
-	margin-right: 10px;
-	margin-left: 10px;
+input:checked + .cb1 {
+  border-color: #ffc107;
 }
-
-
-#shapes_4 {
-	width: 10px;
-	height: 10px;
-	margin-right: 10px;
-	margin-left: 10px;
+input:checked + .cb2 {
+  border-color: #ffc107;
+}
+input:checked + .cb1::after,
+input:checked + .cb2::after {
+  height: 10px;
+  animation: bottomcheck 0.2s ease 0s forwards;
+}
+input:checked + .cb1::before,
+input:checked + .cb2::before {
+  height: 24px;
+  animation: topcheck 0.4s ease 0s forwards;
+}
+input {
+    display: none;
+}
+@keyframes bottomcheck {
+  0% {
+    height: 0;
+  }
+  100% {
+    height: 10px;
+  }
+}
+@keyframes topcheck {
+  0% {
+    height: 0;
+  }
+  50% {
+    height: 0;
+  }
+  100% {
+    height: 24px;
+  }
 }
 #mbtiListPage-buttonResult{
-	border-radius: 40px 20px 80px 60px;
+    margin: 2%;
+    background-color:#195d7e;
+    color:#ffde59;
+    border-radius: 40px 20px 80px 60px;
+    position: relative;
+    z-index: 1;
+     bottom: 580px;
+ 	left: 360px;
+ 
 }
+#hoomButton{
+    margin: 2%;
+    border-radius: 50%;
+    position: relative;
+    bottom: 322px;
+    background-color: rgb(245 193 0);
+    color: #ffffff;
+	right: 10px;
+   
+}
+#mbtiInsert{
+    margin: 2%;
+    border-radius: 50%;
+     position: relative;
+    bottom: 322px;
+    background-color: rgb(245 193 0);
+    color: #ffffff;
+    left: 35px;
+}
+#mainPage-span{
+    display: block;
+    background: linear-gradient(to right, #1ed0d7,#ebcc6e, #158714, #294ca459);
+    -webkit-background-clip: text; 
+    -webkit-text-fill-color: transparent;
+    position: relative;
+    z-index: 1;
+    bottom: 340px;
+    right: 30px;
+}
+
+#mainResultPage-h1{
+	color: rgb(255 222 89);
+    padding: 2%;
+    position: relative;
+    z-index: 1;
+    bottom: 375px;
+    text-shadow: 4px 4px 2px #6c757d;
+}
+#mainResultPage-h5{
+	display: block;
+    background: linear-gradient(to right, #cfcfcf,#ebcc6e, #158714, #f8f8f859);
+    -webkit-background-clip: text; 
+    -webkit-text-fill-color: transparent;
+    position: relative;
+    z-index: 1;
+    bottom: 380px;
+    font-size: 16px;
+}   
+
+#mainResultPage-p{
+	display: block;
+    background: linear-gradient(to right, #1ed0d7,#b1b7bc, #6c757d, #294ca459);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    position: relative;
+    z-index: 1;
+    bottom: 349px;
+    right: 120px;	
+}
+.mbtiMainImg{
+	width: 100%; 
+	height: 100%; 
+	position: relative;
+}
+.mbtiListImg{
+	width: 900px;
+    height: 600px; 
+    position: relative; 
+    left: 100px
+}
+.mbtiListlIcon{
+	position: relative; 
+	bottom: 5px; 
+	margin:4px;
+}
+.mbtiResultImg{
+	width: 100%;
+	height: 100%; 
+	position: relative;
+}
+#mbtiResultH4{
+	color: #ffffff; 
+	position: relative; 
+	bottom: 370px;
+}
+
+
+
+
+
+
+
+
+
+
+
+

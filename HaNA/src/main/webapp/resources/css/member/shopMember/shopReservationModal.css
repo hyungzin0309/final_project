@@ -1,0 +1,97 @@
+@charset "UTF-8";
+
+.shop-res-modal{
+	margin-top: 100px;
+}
+
+/* 예약일 선택 table */
+#calendarTable{
+	margin: auto;
+}
+#calendarTable th{
+	text-align: center;
+}
+#calendarTable td{
+	text-align: center;
+}
+.dateNormal{
+	color:black;
+}
+.dateSat{
+	color:blue;
+}
+.dateSun{
+	color:red;
+}
+.disabled{
+	color:yellow;
+}
+.dateBtn{
+	border: none;
+	background-color: #ffffff;
+	outline: 0;
+}
+.calendar-btn{
+	background-color: white;
+	border: none;
+}
+
+/* 닫기버튼 */
+.close{
+	background-color: white;
+	border : none;
+	border-radius: 15%;
+}
+.close:hover{
+	background-color: gray;
+}
+
+/* 테이블 선택 */
+#table-select{
+	border: 1px solid black;
+	border-collapse: collapse;
+}
+#table-select th{
+	border-right: 1px solid gray;
+	border-bottom: 1px solid black;
+	text-align: center;	
+	background-color: #dbd9d9;
+}
+#table-select td{
+	border-right: 1px solid gray;
+	border-bottom: 1px solid black;
+	text-align: center;
+}
+
+
+/* 시간 선택 */
+#time-select{
+	margin: auto;
+	border-collapse: collapse;
+	border: 1px solid gray;
+}
+#time-select th{
+	border: 1px dotted gray;
+	text-align: center;
+	background-color: #dbd9d9;
+}
+#time-select td{
+	border: 1px dotted gray;
+	text-align: center;
+}
+
+/* 인원, 요청사항 입력 */
+#res-info{
+	margin: auto;
+}
+#res-info th{
+	padding-right: 10px;
+	text-align:center;
+}
+#res-info td{
+	width: 300px;
+}
+#req_order_textarea{
+	width: 100%;
+}
+

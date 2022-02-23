@@ -1,0 +1,39 @@
+@charset "UTF-8";
+
+.statics-main {
+padding:0 1%;
+height:100%;
+margin:auto;	
+}
+
+.statistic-page-label{
+text-align:center;
+margin-top:7vh;
+height:10vh;
+}
+.statistic-container {
+width:80%;
+min-height:1000px;
+margin-bottom:10%;
+}
+
+.statistic-select-box {
+	width:120px;
+	height:35px;
+	text-align:center;
+}
+.graph-keyword {
+text-align:right;
+font-weight:bold;
+}
+.graph-bar {
+margin-top:10px;display:inline-block; background-color:#607d8b; height:50%;
+}
+.graph-container {
+	margin-top:100px;	
+}
+.graph-bar-container {
+
+width:80%; height:40px; color:gray; font-weight:400;
+}
+

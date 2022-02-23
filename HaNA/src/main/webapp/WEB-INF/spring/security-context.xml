@@ -14,12 +14,15 @@
 	
 	<http pattern="/resources/**" security="none"/>
 	<http auto-config="true">
-		<intercept-url pattern="/" access="permitAll"/>
-		<intercept-url pattern="/index.jsp" access="permitAll"/>
+ 		<intercept-url pattern="/" access="permitAll"/>
+ 		<intercept-url pattern="/index.jsp" access="permitAll"/>
 		<intercept-url pattern="/member/login" access="permitAll"/>
+		<intercept-url pattern="/member/memberEnrollMain" access="permitAll"/>
 		<intercept-url pattern="/member/memberEnroll" access="permitAll"/>
-		<intercept-url pattern="/member/memberView" access="isAuthenticated()"/>
-		<intercept-url pattern="/**" access="permitAll"/>
+		<!-- 제제된 경우 role_user가 삭제됨 -->
+ 		<intercept-url pattern="/member/memberView/**" access="hasRole('USER')"/>
+ 		<intercept-url pattern="/member/shopView/**" access="hasRole('USER')"/>
+ 		<intercept-url pattern="/**" access="isAuthenticated()"/>
 		
 		<form-login
 			login-page="/member/login"
@@ -44,6 +47,8 @@
 			data-source-ref="dataSource"
 			token-validity-seconds="1209600"/> <!-- 60 * 60 * 24 * 14 (2주) -->
 		
+		<!-- 제제된 경우 에러페이지 -->
+		<access-denied-handler error-page="/error/restrictedUserDenied"/>	
 	</http>
 	
 	<authentication-manager>

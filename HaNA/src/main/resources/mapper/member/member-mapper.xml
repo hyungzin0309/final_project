@@ -6,44 +6,480 @@
 
 	<insert id="memberEnroll">
 		insert into member values
-		(#{id}, #{password}, #{name}, #{picture}, #{personalId}, #{accountType}, #{addressFirst}, #{addressSecond}, #{addressThird}, #{addressFull}, #{introduce}, default)
+		(#{id}, #{password}, #{name}, #{picture}, #{personalId}, #{accountType}, #{addressFull}, #{addressAll}, #{introduce}, default, #{locationX}, #{locationY})
 	</insert>
 
 
 	<update id="updateMember">
-	 update member set
-	 name = #{name},
-	 address_first =  #{addressFirst},
-	 <!-- addressSecound = #{addressSecound},
-	 addressThrid =  #{addressThird},
-	 addressFull =  #{addressFull}, -->
-	 introduce = #{introduce} 
-	 where 
-	 	id = #{id}	
+		 update member set
+			 name = #{name},
+			 address_full = #{addressFull},
+			 address_all = #{addressAll},
+			 introduce = #{introduce},
+			 location_x = #{locationX},
+			 location_y = #{locationY}
+		 where 
+		 	id = #{id}	
 	</update>
 
-     <update id= "updatePersonality">
-     update personality
-     set
-     member_id = #{id},
-     personality = #{personality}
-     </update>
+	<insert id="addFollowing" parameterType ="map">
+		insert into
+		follower 
+		values
+		(#{friendId}, #{myId})
 	
-	<update id="updateInterest">
-		update interest
-     set
-     member_id = #{id},
-     interest = #{interest}
-     
+	</insert>
+
+	<select id="countFollowing" parameterType="string" resultType="_int">
+		select 
+			count(*)
+		from
+			follower
+		where
+			member_id = #{friendId}
+	</select>
+
+	<select id="countFollower" parameterType="string" resultType="_int">
+		select
+			count(*)
+		from
+			follower
+		where
+			following_id = #{myId}
+	
+	</select>
+ 
+	<select id="selectOneMember" parameterType="string" resultType="member">
+		select
+		 *
+		from
+			member m  
+			left join public_check p
+			on m.id = p.member_id
+		where
+			id = #{id}
+	</select>
+
+	<select id="followerList" resultMap="memberMap">
+	select
+		*
+	from
+		  member m left join  follower f
+	 on 
+		    m.id = f.following_id
+	where
+		f.member_id = #{friendId}
+	</select>
+
+	<select id="followingList" resultMap="memberMap">
+		select 
+		    *
+		from
+		    member m left join follower f
+		on 
+		        m.id = f.member_id
+		where 
+		    f.following_id = #{friendId}
+	</select>
+	
+	<select id="followingListById" parameterType="string" resultMap="resFriendSearchMap">
+		select
+			f.member_id "id",
+			m.picture "pic"
+		from
+			follower f left join member m
+			on f.member_id = m.id
+		where
+			following_id = #{memberId}
+			and
+			member_id like '%' || #{inputText} || '%'
+	</select>
+	
+	<resultMap type="map" id="resFriendSearchMap">
+		<id column="id" property="id"/>
+		<result column="pic" property="pic"/>
+	</resultMap>
+
+
+<resultMap type="member" id="memberMap">
+	<id column = "id" property ="id"/>
+	<result column= "password" property="password"/>
+	<result column= "name" property="name"/>
+	<result column= "picture" property="picture"/>
+	<result column= "personal_id" property="personalId"/>
+	<result column= "account_type" property="accountType"/>
+	<result column= "address_full" property="addressFull"/>
+	<result column= "address_all" property="addressAll"/>
+	<result column= "introduce" property="introduce"/>
+	<result column= "enabled" property="enabled"/>
+	<result column= "location_X" property="locationX"/>
+	<result column= "location_Y" property="locationY"/>
+
+	<collection property="followers" ofType="follower">
+		<result column="member_Id" property="memberId"/>
+		<result column="following_Id" property="followingId"/>
+	</collection>
+</resultMap>
+
+	<select id="selectOneShopInfo" parameterType="string" resultType="shop">
+		select
+			*
+		from
+			shop_info
+		where
+			id = #{id}
+	</select>
+
+	
+	<update id="updateShopInfo" parameterType="shop">
+		update shop_info
+		set shop_name = #{shopName}, bussiness_hour_start = #{bussinessHourStart}, bussiness_hour_end = #{bussinessHourEnd}, location_x = #{locationX}, location_y = #{locationY}, address = #{address}, address_detail = #{addressDetail},
+		shop_introduce = #{shopIntroduce}
+		where id = #{id}
 	</update>
 
-	<select id="selectPersonality" parameterType="string" resultType="member">
-		select *
+	<insert id="insertShopInfo" parameterType="string">
+		insert into shop_info (id)
+		values(#{id})
+	</insert>
+
+	<insert id= "insertMemberBoard" parameterType="board">
+		insert into board (no,writer, content, picture)
+		values (seq_board_no.nextval, #{writer}, #{content}, #{picture})
+	</insert>
+	
+	<insert id="insertReview" parameterType="board">
+		insert into board (no, writer, content, board_type, picture)
+		values(seq_board_no.nextval, #{writer}, #{content}, 'S', #{picture})
+		<selectKey order="AFTER" keyProperty="no" resultType="int">
+			select
+				seq_board_no.currval
+			from
+				dual
+		</selectKey>
+	</insert>
+
+	<update id="updateMemberProfile" parameterType="member">
+		update member
+		set picture = #{picture}
+		where id = #{id}
+	</update>
+
+	<update id="updatePassword">
+		update member
+		set password = #{password}
+		where id = #{id}
+	</update>
+
+	<select id= "selectBoardList" resultType = "board">
+		select 
+			*
 		from
-			personality
+			board
 		where
-			member_id = #{id}
+			writer = #{id}
+		order by reg_date desc
+	</select>
+	
+	<select id="selectOneBoard" resultType = "board">
+		select 
+			b.*,
+			m.picture writer_profile
+		from
+			board b join member m
+			on b.writer = m.id
+		where
+			b.no = #{no}
 	</select>
 
 
+	<insert id="enrollBoardComment">
+	insert into
+			 board_comment
+		values(
+			seq_board_comment_no.nextval,
+			#{boardNo},
+			#{commentLevel},
+			#{writer},
+			#{content},
+			<choose>
+				<when test="commentRef eq 0">
+					null,
+				</when>
+				<otherwise>
+					#{commentRef},
+				</otherwise>
+			</choose>
+			default
+		)
+	</insert>
+
+	<delete id="deleteBoard">
+	delete from
+			board
+		where
+			no = #{no}
+	</delete>
+
+	<select id="selectBoardCommentList" resultType="boardComment">
+		select
+			bc.*,
+			m.picture writer_profile
+		from
+			board_comment bc join member m
+		on bc.writer = m.id
+		where
+				bc.board_no = #{boardNo}
+		start with
+			comment_level = 1
+		connect by prior
+			no = comment_ref 
+		order siblings by
+			no  
+	</select>
+	
+		<delete id="deleteBoardComment">
+		delete from
+			board_comment
+		where
+			no=#{no}
+	</delete>
+
+	<update id="updateBoardContent">
+		update
+				board
+		set
+			content=#{content}
+		where
+			no=#{no}
+	</update>
+	
+		<insert id="insertLikeLog">
+		insert into
+			 board_like
+		values(
+			#{boardNo},#{memberId}
+		)
+	</insert>
+
+	<select id="selectOneLikeLog" resultMap="likeLog">
+	select
+		*
+	from
+		 board_like
+	where
+		board_no = #{boardNo}
+		and
+		member_id = #{memberId}
+	</select>
+	<resultMap type="map" id="likeLog">
+		<result column="board_no" property="boardNo"/>
+		<result column="member_id" property="memberId"/>
+	</resultMap>
+
+	<delete id="deleteLikeLog">
+		delete from
+			board_like
+		where
+			board_no = #{boardNo}
+			and
+			member_id = #{memberId}
+	</delete>
+
+	<select id="selectLikeCount" resultType="_int">
+	select
+		count(*)
+	from(
+		select
+			*
+		from
+			board_like
+		where
+			board_no = #{no}
+		)	
+	</select>
+
+<!-- 	<insert id="checkAccountPrivate">
+		insert into
+			public_check (member_id, public_profile)
+	    values
+	        (#{id}, #{publicProfile})
+	</insert> -->
+
+	<select id="checkFriend" resultType="_int">
+	 select 
+	 	count(*) 
+	 from
+	 	follower
+	 where
+	 	member_id = #{id}
+	 	and
+	 	following_id = #{loginMemberId}	
+	</select>
+
+	 <update id="updateAccountPrivate">
+	update public_check
+     set
+     	public_profile = #{publicProfile}
+     where
+     	member_id = #{id}
+	</update> 
+
+<!--	<delete id="updateAccountPrivate">
+	delete from public_check where member_id = #{id}
+	</delete>-->
+
+	<insert id="requestFollowing">
+		insert into following_request 
+		values(#{friendId}, #{myId}, #{status})
+	</insert>
+
+
+	<select id="followingRequest" resultType="_int">
+	 select 
+	 	count(*) 
+	 from
+	 	following_request
+	 where
+	 	member_id = #{loginMemberId}
+	 and
+	 	status = '요청'
+	</select>
+
+	<select id="requestFollowingList" resultMap="FollowingRequest">
+	select
+	    f.*,
+	    m.*,
+	    k.picture reqPicture
+	from
+	    following_request f left join member m
+	    on f.member_id = m.id
+	    left join member k
+	    on f.req_id = k.id
+	where
+	    f.member_id = #{myId}	
+	 and
+	 	f.status ='요청'
+	</select>
+	
+	<resultMap id="FollowingRequest" type="map">
+		<id column="member_id" property="memberId"/>
+		<result column="req_id" property="reqId"/>
+		<result column="status" property="status"/>
+		<result column="picture" property="picture"/>
+	</resultMap>
+	
+	<delete id="applyFollowing">
+		delete from
+		 following_request
+		where
+			req_id=#{reqId}
+			and
+			member_id =#{myId}
+			and
+			status = '요청'
+	</delete>
+	
+	<insert id="addRequestFollowing" >
+		insert into
+		follower 
+		values
+		(#{myId}, #{reqId})
+	
+	</insert>
+	
+	<delete id="refuseFollowing">
+		delete 
+			following_request
+		where 
+			req_id=#{reqId}
+			and
+			member_id =#{myId}
+	</delete>
+	
+<!-- 		<select id="checkRefuse" resultType="_int">
+	 select 
+	 	count(*) 
+	 from
+	 	following_request
+	 where
+	 	status = '거절'
+	 and
+	 	req_id = #{loginMemberId}
+	</select> -->
+	
+	<select id="isRequestFriend" resultType="_int">
+	 select 
+	 	count(*) 
+	 from
+	 	following_request
+	 where
+	 	req_id = #{loginMemberId}
+	 	and
+	 	member_id = #{id}
+	</select>
+	
+	<select id="selectShopReviewList" parameterType="string" resultType="board">
+		select
+		    b.*,
+		    s.shop_id "shopId"
+		from
+		    board_review r inner join board b
+		    on r.no = b.no
+		    inner join shop_table_reservation s
+		    on r.reservation_no = s.reservation_no
+		where
+			s.shop_id = #{id}
+		order by
+			reg_date desc	
+	</select>
+	
+	<select id="checkFollow" resultType="_int">
+	 select 
+	 	count(*) 
+	 from
+	 	follower
+	 where
+	 	member_id = #{loginMemberId}
+	 	and
+	 	following_id = #{id}	
+	</select>
+	
+	<insert id="insertReport" parameterType="map">
+		insert into report_history
+		values(#{reportedUser}, #{reportUser}, #{content}, default)
+	</insert>
+	
+	<select id="selectReportUser" parameterType="map" resultType="int">
+		select
+		    count(*)
+		from
+		    report_history
+		where
+		    id = #{reportedUser}
+		    and
+		    report_user = #{reportUser}
+		    and
+		    status = 'N'
+	</select>
+	
+	<select id="selectRestrictionData" parameterType="string" resultType="map">
+		select
+			*
+		from
+			user_restricted
+		where
+			id = #{id}
+			and
+			restricted_date > sysdate
+	</select>
+
+	<update id="appealMyDistriction" parameterType="string">
+		update user_restricted
+		set appeal_distriction = 'Y'
+		where
+			id = #{id}
+			and
+			restricted_date > sysdate
+	</update>
 </mapper>

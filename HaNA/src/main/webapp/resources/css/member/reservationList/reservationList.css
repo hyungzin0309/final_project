@@ -1,0 +1,51 @@
+@charset "UTF-8";
+
+.myResListArea{
+	width: 100%;
+	padding: 0;
+}
+
+#tab{
+	margin-top: 20px;
+}
+
+#myReservationTable {
+	border: 1px solid black;
+	border-collapse: collapse;
+	width:99%;
+	margin-top:5px;
+}	
+#myReservationTable th{
+	border: 1px solid black;
+	border-collapse: collapse;
+}	
+#myReservationTable td{
+	border: 1px solid black;
+	border-collapse: collapse;
+}	
+
+#leftSideList{
+	height: 200px;
+}
+
+
+#res-container{
+	width: 65%;
+}
+
+#myReservationTable{
+	table-layout:fixed;
+	word-break:break-all;
+	font-size: 15px;
+}
+
+#myReservationTable input{
+	width:30px;
+	padding: 0;
+	background-color: #e7e6e6;
+	border: 1px solid gray;
+}
+
+.res-list-btnArea{
+	font-size: 10px;
+}

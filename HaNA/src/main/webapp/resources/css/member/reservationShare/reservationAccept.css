@@ -1,0 +1,27 @@
+@charset "UTF-8";
+
+#resAcceptModal{
+	width:100%;
+}
+
+#resDetailTable{
+	margin:auto;
+	border:1px dotted black;
+	border-collapse:collapse;
+}
+#resDetailTable th{
+	text-align:center;
+	border:1px dotted gray;
+	background-color:#c9c9c9;
+}
+#resDetailTable td{
+	text-align:center;
+	border:1px dotted gray;
+}
+.close{
+	background-color:white;
+	border:none;
+}
+.close:hover{
+	background-color:gray;
+}

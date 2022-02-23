@@ -1,0 +1,681 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="shop">
+   
+   <select id="selectShopList" parameterType="map" resultMap="hashTagsMap">
+		select
+		    s.*,
+		    m.picture,
+		    h.tag_name
+		from
+		    shop_info s left join member m
+		    on s.id = m.id
+		    left join shophashtag t
+		    on s.id = t.member_id
+		    left join hashtag h
+		    on t.tag_id = h.tag_id
+        where
+            s.location_x <![CDATA[<]]> ${maxLocationX}
+            and
+            s.location_y <![CDATA[<]]> ${maxLocationY}
+            and
+            s.id != #{id}
+            and
+            s.address is not null
+    </select>
+    
+    <select id="selectHashTagShopList" parameterType="map" resultMap="hashTagsMap">
+		select
+		    s.*,
+		    m.picture,
+		    h.tag_name
+		from
+		    shop_info s left join member m
+		    on s.id = m.id
+		    left join shophashtag t
+		    on s.id = t.member_id
+		    left join hashtag h
+		    on t.tag_id = h.tag_id
+        <where>
+         	s.location_x <![CDATA[<]]> ${maxLocationX}
+            and
+            s.location_y <![CDATA[<]]> ${maxLocationY}
+            and
+            s.id != #{id}
+            and
+            s.address is not null
+            and
+            h.tag_name in
+            <foreach collection="tags" item="tags" open="(" close =")" separator=",">
+            #{tags}
+            </foreach>
+        </where>
+        
+    </select>
+    	<select id="selectHashTagClickShopList" parameterType="map" resultMap="hashTagsMap">	
+		select
+            s.*,
+		    m.picture,
+		    h.tag_name
+        from
+            shop_info s left join member m
+		    on s.id = m.id
+		    left join shophashtag t
+		    on s.id = t.member_id
+		    left join hashtag h
+		    on t.tag_id = h.tag_id
+        where 
+        	 s.address is not null
+        	 and 
+            h.tag_name = #{tagName}
+	</select>
+	
+    <resultMap type="map" id="hashTagsMap">
+		<id column="id" property="id"/>		
+		<result column="shop_name" property="shopName"/>
+		<result column="bussiness_hour_start" property="bussinessHourStart"/>
+		<result column="bussiness_hour_end" property="bussinessHourEnd"/>
+		<result column="location_x" property="locationX"/>
+		<result column="location_y" property="locationY"/>
+		<result column="address" property="address"/>
+		<result column="address_detail" property="addressDetail"/>
+		<result column="shop_introduce" property="shopIntroduce"/>
+		<result column="picture" property="picture"/>
+
+
+		<collection property="hashTags" javaType="java.util.List" resultMap="hashTagName">
+		</collection>
+	</resultMap>
+	<resultMap type="String" id="hashTagName">
+		<id property="tagName" column="tag_name"/>
+	</resultMap>
+  
+
+    <select id="searchHashTag" parameterType="hashtag" resultType="hashtag">
+    	select
+    		*
+   		from
+   			hashtag
+  		where
+  			tag_name = #{tagName} 	
+    </select>
+    
+    <select id="searchShopHashTag" parameterType="hashtag" resultType="hashtag">
+        	select
+    		*
+   		from
+   			shophashtag
+  		where
+  			tag_id = #{tagId} 
+  			and
+  			member_id = #{memberId}	
+    </select>
+    
+    <insert id="insertHashTag" parameterType="hashtag">
+    	insert into
+    		hashtag
+   		values(concat(#{tagId}, seq_hashtag.nextval), #{tagName})
+    </insert>
+    
+    <insert id="insertShopHashTag" parameterType="hashtag">
+        <selectKey order="BEFORE" resultType="string" keyProperty="tagId">
+        	select
+        		tag_id
+       		from
+       			hashtag
+      		where
+      			tag_name = #{tagName}
+        </selectKey>
+        insert into
+            shophashtag
+        values(#{memberId}, #{tagId})
+    </insert>
+    
+    <select id="selectShopHashTag" parameterType="string" resultType="hashtag">
+    	select
+    		*
+    	from
+    		shophashtag s left join hashtag h on s.tag_id = h.tag_id
+    	where
+    		member_id = #{memberId}    
+    </select>
+    
+    <select  id="selectHashTagList" resultType="hashtag">
+        select 
+            * 
+        from
+            hashtag 
+        where 
+            tag_name like #{search} || '%'
+    
+    </select>
+    
+    <insert id="insertShopTable" parameterType="table">
+    	insert into shop_table_setting
+    	values(#{shopId}, concat('table-', seq_shop_table_setting.nextval), #{tableName}, #{allowVisitor}, #{allowStart}, #{allowEnd}, #{timeDiv}, #{timeMax}, #{memo}, #{enable})
+    </insert>
+    
+    <select id="verifyTableName" parameterType="table" resultType="string">
+    	select
+    		table_name
+   		from
+   			shop_table_setting
+  		where
+  			shop_id = #{shopId}
+  			and
+  			table_name = #{tableName}
+    </select>
+    
+    <select id="selectShopTableList" parameterType="string" resultType="table">
+		select
+		    s.*,
+		    p.price
+		from
+		    shop_table_setting s left join shop_table_price p
+		    on s.table_id = p.table_id
+		where
+			s.shop_id = #{id}
+		order by
+			s.table_name
+    </select>
+    
+    <delete id="deleteShopTable" parameterType="string">
+    	delete from
+   			shop_table_setting
+		where
+			table_id = #{tableId}
+    </delete>
+    
+    <update id="updateShopTable" parameterType="table">
+    	update shop_table_setting
+    	set
+    		<if test="updatable.equals('Y')">		
+    		table_name = #{tableName},
+    		allow_visitor = #{allowVisitor},
+    		allow_start = #{allowStart},
+    		allow_end = #{allowEnd},
+    		time_div = #{timeDiv},
+    		time_max = #{timeMax},
+    		</if>
+    		memo = #{memo},
+    		enable = #{enable}
+    	where
+    		table_id = #{tableId}
+    </update>
+    
+    <select id="selectOneTable" parameterType="table" resultType="table">
+    	select
+    		*
+   		from
+   			shop_table_setting
+  		where
+  			table_id = #{tableId}
+    </select>
+
+    
+    <insert id="insertReservation" parameterType="reservation">
+    	insert into shop_table_reservation
+    	values(
+    		concat(#{shopId} || '-', seq_shop_table_reservation_res_no.nextval),
+    		#{reservationTableId},
+    		#{reservationUser},
+    		#{shopId},
+    		#{reservationDate},
+    		#{timeStart},
+    		#{timeEnd},
+    		#{visitorCount},
+    		#{reqOrder},
+    		default
+    	)
+    	<selectKey order="AFTER" keyProperty="reservationNo" resultType="string">
+    		select
+    			concat(#{shopId}||'-', seq_shop_table_reservation_res_no.currval)
+    		from
+    			dual
+    	</selectKey>
+    </insert>
+
+	<select id="selectTableReservation" parameterType="map" resultType="reservation">
+		select
+			*
+		from
+			shop_table_reservation
+		where
+			reservation_table_id = #{tableId}
+			and
+			reservation_status != '예약취소'		
+			<if test="date != null">
+			and
+			to_date(reservation_date) = #{date}
+			</if>
+	</select>
+	
+	<select id="shopReservationCount" parameterType="string" resultType="int">
+		select
+			count(*)
+		from
+			shop_table_reservation
+		where
+			shop_id = #{shopId}
+			and
+			reservation_date > sysdate-1
+			and
+			reservation_status = '예약완료'	
+	</select>
+	
+	<select id="selectShopReservationListByDate" parameterType="map" resultType="reservation">
+		select
+			*
+		from
+			shop_table_reservation
+		where
+			shop_id = #{shopId}
+			and
+			to_date(reservation_date) = #{date}
+	</select>
+	
+	<select id="selectMyReservationList" parameterType="map" resultType="reservation">
+		select
+			*
+		from
+			shop_table_reservation_share s left join shop_table_reservation r
+			on s.reservation_no = r.reservation_no
+			left join shop_info i
+			on r.shop_id = i.id
+			left join shop_table_setting t
+    		on r.reservation_table_id = t.table_id
+		where
+			s.attend_user = #{id}
+			<if test="state == 1">
+				and
+				r.reservation_date > sysdate - 1
+			</if>
+			<if test="state == 0">
+				and
+				r.reservation_date + 1 <![CDATA[<]]> sysdate
+			</if>
+			and
+			s.req_accept = 'Y'
+		order by
+			r.reservation_date, time_start
+	</select>
+	
+	<update id="cancleReservation" parameterType="string">
+		update shop_table_reservation
+		set reservation_status = '예약취소'
+		where reservation_no = #{reservationNo}
+
+	</update>
+	
+	
+	<insert id ="selectRankingData" parameterType="map" >
+	  <selectKey order="BEFORE" resultType="string" keyProperty="tagId">
+            select
+                tag_id as tagId
+               from
+                   hashtag
+              where
+                  tag_name = #{tags} 
+        </selectKey>
+       		 	insert into ranking
+        		values (#{id},#{tagId},#{tagDate})
+	</insert>
+	
+	<select id="selectOneReservation" parameterType="string" resultType="reservation">
+		select
+			*
+		from
+			shop_table_reservation
+		where
+			reservation_no = #{reservationNo}
+	</select>
+	
+	<insert id="insertReservationShare" parameterType="reservation">
+		insert into shop_table_reservation_share
+		values(#{reservationNo}, #{attendUser}, #{reqAccept}, default, 'N')
+	</insert>
+	
+	<select id="checkShareAccepted" parameterType="map" resultType="reservation">
+		select
+			*
+		from
+			shop_table_reservation_share
+		where
+			reservation_no = #{reservationNo}
+			and
+			attend_user = #{id}
+	</select>
+	
+	<select id="selectAcceptedFriends" parameterType="string" resultType="member">
+		select
+		    s.attend_user "id",
+		    m.picture "picture"
+		from
+		    shop_table_reservation_share s left join member m
+		    on s.attend_user = m.id
+		where
+		    reservation_no = #{reservationNo}
+		    and
+		    req_accept = 'Y'
+	</select>
+	
+
+	<select  id="selectTodayRankingdatas" resultType="map" >	
+			select 
+				 count(*)as count,h.tag_name
+			from 
+				ranking r left join   hashtag h  
+				on r.tag_id = h.tag_id
+			WHERE 
+				TO_CHAR(SYSDATE, 'MM/dd') = TO_CHAR(r.tag_date, 'MM/dd') 
+			group by h.tag_name
+			order by count desc
+
+	</select>
+	
+	<select  id="selectThisMonthRankingdatas" resultType="map">
+		select 
+			count(*)as count,h.tag_name
+		from 
+			ranking r left join   hashtag h  
+			on r.tag_id = h.tag_id
+		WHERE 
+			tag_date BETWEEN TRUNC(SYSDATE, 'MM') and LAST_DAY(SYSDATE)
+		group by h.tag_name
+		order by count desc
+			
+	</select>
+	
+	<select  id="selectThisWeekRankingdatas" resultType="map">
+		select 
+			count(*)as count,h.tag_name
+		from 
+			ranking r left join   hashtag h    
+			on r.tag_id = h.tag_id
+		where 
+			tag_date between
+			(SELECT TRUNC(sysdate, 'iw') dt_date
+			FROM dual)
+			and
+			(SELECT TRUNC(sysdate, 'iw') + 6 dt_date
+			FROM dual)
+		group by h.tag_name
+		order by count desc
+					
+	</select>
+
+	<select id="selectTablePrice" parameterType="string" resultType="table">
+		select
+			*
+		from
+			shop_table_price p inner join shop_table_setting s
+			on p.table_id = s.table_id
+		where
+			p.shop_id = #{id}
+	</select>
+	
+	<update id="updateTablePrice" parameterType="table">
+		update shop_table_price
+		set price = #{price}
+		where table_id = #{tableId}
+	</update>
+	
+	<select id="selectOneTablePrice" parameterType="string" resultType="int">
+		select
+			price
+		from
+			shop_table_price
+		where
+			table_id = #{reservationTableId}
+	</select>
+	
+	<insert id="insertReservationPrice" parameterType="map">
+		insert into
+			reservation_req_price
+		values(#{reservationNo}, #{originalPrice}, #{originalPrice})
+	</insert>
+	
+	<update id="updateReqDutchpay" parameterType="map">
+		update shop_table_reservation_share
+			set req_dutchpay = #{status}
+		where
+			reservation_no = #{reservationNo}
+			<if test="id != null">
+			and
+			attend_user = #{id}
+			</if>
+	</update>
+	
+	<select id="selectPriceAndVisitors" parameterType="string" resultType="map">
+		select
+		    s.reservation_no,
+		    s.attend_user,
+		    p.originalprice,
+		    p.restprice,
+		    m.name,
+		    m.id,
+		    m.address_all
+		from
+		    shop_table_reservation_share s inner join reservation_req_price p
+		    on s.reservation_no = p.reservation_no
+		    inner join member m
+		    on s.attend_user = m.id
+		where
+		    s.reservation_no = #{reservationNo}
+	</select>
+	
+	<select id="selectPriceAndMember" parameterType="map" resultType="map">
+	select
+	    s.reservation_no,
+	    s.attend_user,
+	    p.originalprice,
+	    m.name,
+	    m.id,
+	    m.address_all
+	from
+	    shop_table_reservation_share s inner join reservation_req_price p
+	    on s.reservation_no = p.reservation_no
+	    inner join member m
+	    on s.attend_user = m.id
+	where
+	    s.reservation_no = #{reservationNo}
+	    and
+	    s.attend_user = #{id}
+	</select>
+	
+	<insert id="insertPurchaseHistory" parameterType="map">
+		insert into purchase_history
+		values(#{id}, #{uid}, #{merchantUid}, #{amount}, default, default)
+	</insert>
+	
+	<update id="updateRestPrice" parameterType="map">
+		update reservation_req_price
+		set restprice = restprice - #{amount}
+		where
+			reservation_no = #{reservationNo}
+	</update>
+
+
+
+	
+	<insert id="insertBoardReview" parameterType="map">
+		insert into board_review
+		values(#{boardNo}, #{reservationNo}, #{checkedVal})
+	</insert>
+	
+	<update id="updateReviewStatus" parameterType="map">
+		update shop_table_reservation_share
+		set review_status = 'S'
+		where
+			attend_user = #{attendUser}
+			and
+			reservation_no = #{reservationNo}
+	</update>
+	
+	<select id="selectShopGrade" parameterType="string" resultType="map">
+		select
+		    *
+		from
+		    board_review b inner join shop_table_reservation s
+		    on b.reservation_no = s.reservation_no
+		where
+		    s.shop_id = #{shopId}
+	</select>
+	
+	<select id="selectShopReservationUserList" parameterType="string" resultType="map">
+		select
+		    s.reservation_no,
+		    s.attend_user,
+		    r.shop_id,
+		    r.reservation_status,
+		    extract(year from sysdate) - (decode(substr(m.personal_id, 8, 1), '1', '1900', '2', '1900', '2000')+substr(m.personal_id, 1, 2))+1 "age",
+		    decode(substr(m.personal_id, 8, 1), '1', '남', '3', '남', '여') "gender"
+		from
+		    shop_table_reservation_share s left join shop_table_reservation r
+		    on s.reservation_no = r.reservation_no
+		    left join member m
+		    on s.attend_user = m.id
+		    left join public_check p
+		    on s.attend_user = p.member_id
+		where
+		    r.reservation_status = '예약완료'
+		    and
+		    p.public_profile = 1
+		    and
+		    r.shop_id = #{shopId}
+	</select>
+	
+	<select id="selectShopReservationDawnList" parameterType="string" resultType="int">
+		select
+		    count(*)
+		from
+		    shop_table_reservation
+		where
+		    time_start >= '00:00'
+		    and
+		    time_start <![CDATA[<]]> '08:00'
+		  	and
+		  	shop_id = #{shopId}
+		  	and
+		  	reservation_status = '예약완료'
+	</select>
+	<select id="selectShopReservationDayList" parameterType="string" resultType="int">
+		select
+		    count(*)
+		from
+		    shop_table_reservation
+		where
+		    time_start >= '08:00'
+		    and
+		    time_start <![CDATA[<]]> '16:00'
+		  	and
+		  	shop_id = #{shopId}
+		  	and
+		  	reservation_status = '예약완료'
+	</select>
+	<select id="selectShopReservationNightList" parameterType="string" resultType="int">
+		select
+		    count(*)
+		from
+		    shop_table_reservation
+		where
+		    time_start >= '16:00'
+		    and
+		    time_start <![CDATA[<]]> '24:00'
+		  	and
+		  	shop_id = #{shopId}
+		  	and
+		  	reservation_status = '예약완료'
+	</select>
+	
+	<select id="selectShopReservationTableList" parameterType="string" resultType="map">
+		select
+		    r.reservation_table_id,
+		    (select table_name from shop_table_setting where table_id = r.reservation_table_id) "tableName",
+		    count(*) "count"
+		from
+		    shop_table_reservation r left join shop_table_setting s
+		    on r.reservation_table_id = s.table_id
+		where
+		    r.reservation_status = '예약완료'
+		    and
+		    r.shop_id = #{shopId}
+		group by
+		    r.reservation_table_id
+	</select>
+	
+	<select id="selectShopReservationVisitorList" parameterType="string" resultType="map">
+		select
+		    distinct s.attend_user "userId",
+		    m.location_x "locationX",
+    		m.location_y "locationY",
+		    (select
+		        count(*)
+		    from
+		        shop_table_reservation_share rs left join shop_table_reservation tr
+		        on rs.reservation_no = tr.reservation_no
+		    where
+		        tr.reservation_status = '예약완료'
+		        and
+		        rs.attend_user = m.id) "visitCount"
+		from
+		    shop_table_reservation_share s left join shop_table_reservation r
+		    on r.reservation_no = s.reservation_no
+		    left join member m
+		    on s.attend_user = m.id
+		where
+		    shop_id = #{shopId}
+		    and
+		    reservation_status = '예약완료'
+		order by
+		    4 desc
+	</select>
+	
+	<select id="selectRankShopAvg" resultType="map">
+		select
+		    round(avg(b.grade), 1) "avg",
+		    shop_id "shop",
+	        (select picture from member where id = r.shop_id) "picture"
+		from
+		    board_review b left join shop_table_reservation r
+		    on b.reservation_no = r.reservation_no
+	        left join member m
+    		on r.shop_id = m.id
+		group by
+		    r.shop_id
+		order by 
+		    1 desc
+	</select>
+	<select id="selectRankShopReview" resultType="map">
+		select
+		    count(*) "count",
+		    r.shop_id "id",
+		    (select picture from member where id = r.shop_id) "picture"
+		from
+		    board_review b left join shop_table_reservation r
+		    on b.reservation_no = r.reservation_no
+		    left join member m
+		    on r.shop_id = m.id
+		group by
+		    r.shop_id
+		order by 
+		    1 desc
+	</select>
+	<select id="selectRankShopRes" resultType="map">
+		select
+		    count(*) "count",
+		    shop_id "id",
+		    (select picture from member where id = r.shop_id) "picture"
+		from
+		    shop_table_reservation r left join member m
+		    on r.shop_id = m.id
+		where
+		    reservation_status = '예약완료'
+		group by
+		    shop_id
+		order by
+		    1 desc
+	</select>
+</mapper>

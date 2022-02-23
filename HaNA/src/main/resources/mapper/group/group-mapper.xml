@@ -19,31 +19,12 @@
     		#{groupId},
     		#{groupName},
     		#{leaderId},
-    		default,
-    		default,
     		#{hashtag},
     		#{image}
 		)
 		
 	</insert>
-	
-	<select id="selectGroupEnrolled" resultMap="groupMemberListMap">
-		select
-			* 
-		from
-			group_member_list
-		where
-			group_id = #{groupId}
-			and
-		member_id = #{memberId}
-	</select>
-	
-	<resultMap type="map" id="groupMemberListMap">
-		<result column="group_id" property="groupId"/>
-        <result column="member_id" property="memberId"/>
-        <result column="member_level_code" property="memberLevelCode"/>
-	</resultMap>
-	
+		
 	<select id="selectGroupList" resultType="group">
 	select
     	g.*
@@ -63,13 +44,12 @@
 			#{writer},
 			#{content},
 			default,
-			default,
 			#{placeName},
 			#{placeAddress},
 			#{locationY},
 			#{locationX},
-			#{image},
-			#{tagMembers}			
+			#{tagMembers},		
+			#{image}
 		)
 		<selectKey order="AFTER" resultType="_int" keyProperty="no">  <!-- insert문 이후에 실행할게요, GroupBoard객체의 no필드에 세팅할게요 -->
 			select
@@ -80,13 +60,15 @@
 	</insert>
 	<select id="selectOneBoard" resultType="groupBoard">
 		select
-			*
+			g.*,
+			m.picture writer_profile
 		from
-			group_board
+			group_board g join member m
+			on g.writer = m.id
 		where
-			no = #{no}
+			g.no = #{no}
 	</select>
-	<select id="selectMemberList" resultType="member">
+	<select id="selectTagMemberList" resultType="member">
 		select
 			*
 		from
@@ -97,24 +79,738 @@
 				#{id}
 			</foreach>	
 	</select>
-	<select id="selectGroupMemberList" resultType="member">
+	<select id="selectGroupMemberList" resultMap="groupMemberListMap">
 		select
-			id, name, picture
+			group_id, m.id as id, member_level_code, picture
 		from
 			member m join group_member_list gml
 			on m.id = gml.member_id
 		where
 			gml.group_id = #{groupId}
+		order by 
+            (
+            CASE member_level_code
+            WHEN 'ld' THEN 0
+            WHEN 'mg' THEN 1
+            ELSE 2
+            END
+                )
 	</select>
+ 	<resultMap type="map" id="groupMemberListMap">
+        <result column="id" property="memberId"/>
+		<result column="picture" property="profile"/>
+        <result column="member_level_code" property="memberLevelCode"/>
+        <result column="group_id" property="groupId"/>
+	</resultMap>
+	
 	
 	<select id="selectGroupBoardList" resultType="groupBoard">
 	select
-		*
+		no,
+		image
 	from
 		group_board
 	where
 		group_id = #{groupId}
 	order by no desc
 	</select>
+	
+	<insert id="insertEnrollGroupForm" parameterType="map">
+	insert into
+		group_apply_list
+	values(
+		seq_group_apply_list.nextVal,
+		#{groupId},
+		#{memberId},
+		#{content},
+		default,
+		default,
+		default
+		)
+	</insert>
+	
+	<select id="selectGroupApplyList" resultMap="groupApplyFormMap">
+	select
+		*
+	from
+		group_apply_list
+	where
+		group_id = #{groupId}
+		and 
+		handled_yn = 'N'
+		and
+		member_id not in (select
+							member_id
+						  from
+						  	group_member_list
+						  where
+						  	group_id = #{groupId}) -- 이미 가입되어 있는 회원 제외
+	order by
+		no 
+	</select>
+	<resultMap type="map" id="groupApplyFormMap">
+		<id property="no" column="no"/>
+		<result property="memberId" column="member_id"/>
+		<result property="groupId" column="group_id"/>
+		<result property="content" column="content"/>
+		<result property="regDate" column="reg_date"/>
+	</resultMap>
+
+  <insert id="insertGroupBoardComment">
+		insert into
+			group_board_comment
+		values(
+			seq_group_board_comment.nextval,
+			#{boardNo},
+			#{commentLevel},
+			#{writer},
+			#{content},
+			<choose>
+				<when test="commentRef eq 0">
+					null,
+				</when>
+				<otherwise>
+					#{commentRef},
+				</otherwise>
+			</choose>
+			default
+		)
+	</insert>
+	<select id="selectGroupBoardCommentList" resultType="groupBoardComment">
+		select
+			gbc.*,
+			m.picture as writer_profile
+		from
+			group_board_comment gbc join member m
+			on gbc.writer = m.id
+		where
+				gbc.board_no = #{boardNo}
+		start with
+			comment_level = 1
+		connect by prior
+			no = comment_ref -- level=1의 no와 나머지(level=2)의 comment_ref를 기준으로 연결
+		order siblings by
+			no   -- 형제요소끼리의 정렬 기준
+	</select>
+	<delete id="deleteBoardComment">
+		delete from
+			group_board_comment
+		where
+			no=#{no}
+	</delete>
+	
+	<insert id="insertGroupMember" parameterType="map">
+		insert into
+			group_member_list
+		values(
+			#{groupId},
+			#{memberId},
+			default
+		)
+	</insert>
+	
+	<update id="updateApplyHandled">
+		update 
+			group_apply_list 
+		set
+			handled_yn = 'Y',
+			approval_yn = #{approvalYn}
+		where 
+			no = #{no}
+	</update>
+	
+	<delete id="deleteGroupBoard">
+		delete from
+			group_board
+		where
+			no = #{no}
+	</delete>
+	<update id="updateBoardContent">
+		update
+			group_board
+		set
+			content=#{content}
+		where
+			no=#{no}
+	</update>
+	
+	<select id="selectGroupInfo" resultType="group">
+		select
+			*
+		from
+			group_
+		where
+			group_id = #{groupId}
+	</select>
+
+	<select id="selectOneLikeLog" resultMap="likeLog">
+	select
+		*
+	from
+		group_board_like
+	where
+		board_no = #{boardNo}
+		and
+		member_id = #{memberId}
+	</select>
+	
+	<resultMap type="map" id="likeLog">
+		<result column="board_no" property="boardNo"/>
+		<result column="member_id" property="memberId"/>
+	</resultMap>
+	
+	<delete id="deleteLikeLog">
+		delete from
+			group_board_like
+		where
+			board_no = #{boardNo}
+			and
+			member_id = #{memberId}
+	</delete>
+	
+	<insert id="insertLikeLog">
+		insert into
+			group_board_like
+		values(
+			#{boardNo},#{memberId},default
+		)
+	</insert>
+	
+	<select id="selectLikeCount" resultType="_int">
+	select
+		count(*)
+	from
+		group_board_like
+	where
+		board_no = #{no}
+		
+	</select>
+	
+	<delete id="deleteGroupMember">
+	delete from 
+		group_member_list 
+	where 
+		member_id = #{memberId}
+		and
+		group_id = #{groupId}
+	</delete>
+	
+	<update id="updateGroupMemberLevel">
+	update 
+	    group_member_list 
+	set 
+	    member_level_code = #{updateLevel} 
+	where 
+	    member_id = #{memberId} 
+	    and 
+	    group_id = #{groupId}
+	</update>
+	
+	<update id="updateGroup" parameterType="group">
+	update 
+		group_
+	set
+		group_name = #{groupName},
+		hashtag = #{hashtag},
+		image = #{image}
+	where
+		group_id = #{groupId}
+	</update>
+
+	<delete id="deleteAllCalendar">
+	delete from
+		group_calendar
+	where 
+		group_id=#{groupId}
+	</delete>
+	
+	<insert id="insertCalendarData">
+	insert into
+		group_calendar
+	values(
+		#{groupId},#{title},#{allDay},#{start},#{end}
+	)
+	</insert>
+	<select id="selectCalendarData" resultType="groupCalendar">
+	select
+		*
+	from
+		group_calendar
+	where
+		group_id = #{groupId}
+	</select>
+	
+	<insert id="profileImage">
+	update 
+		group_
+	set
+		image = #{image}
+	where
+		group_id = #{groupId}
+	</insert>
+
+	 <delete id="deleteCalendarData">
+	 delete from
+	 	group_calendar
+	 where
+	 	group_id = #{groupId}
+	 	and
+	 	title=#{title}
+	 	and
+	 	all_day=#{allDay}
+	 	and
+	 	start_=#{start}
+	 	and
+	 	end_=#{end}
+	 </delete>
+	 
+	 <select id="selectGroupBoardListByLocation" resultType="groupBoard">
+	 select
+	 	*
+	 from
+	 	group_board
+	 where
+	 	location_x = #{locationX}
+	 	and
+	 	location_Y = #{locationY}
+	 	and
+	 	place_name = #{placeName}
+	 </select>
+	 
+	 <insert id="insertGroupVisitLog">
+	 insert into
+	 	group_visit_log
+	 values(
+	 	#{groupId},
+	 	#{member.id},
+	 	default
+	 )
+	 </insert>
+	 
+	 <select id="selectGroupVisitLog" resultMap="visitLogMap">
+	 select
+	 	*
+	 from
+	 	group_visit_log
+	 where
+	 	group_id = #{groupId}
+	 	and
+	 	member_id = #{member.id}
+	 	and
+	 	trunc(visit_date) = trunc(sysdate)
+	 </select>
+	 
+	 <resultMap id="visitLogMap" type="map">
+	 	<result column="group_id" property="groupId"/>
+	 	<result column="member_id" property="memberId"/>
+	 	<result column="visit_date" property="visitDate"/>
+	 </resultMap>
+	 
+	 <select resultMap="graphMap" id="selectVisitCountList">
+	select
+	    member_id as member,
+	    NVL(count,0) as count
+	from
+	(select
+	    member_id
+	from
+	    group_member_list
+	where
+	    group_id = #{groupId}) table1 -- group의 멤버 리스트
+	left join
+	 (select 
+	    member_id,
+	    count(member_id) as count
+	    from (select
+                 member_id
+             from
+                 group_visit_log
+             where
+                 group_id=#{groupId}
+                 <if test="day != 0">
+               	and
+                 visit_date between sysdate-#{day} and sysdate
+               	</if>
+                 )
+	 	group by member_id) table2
+	 using (member_id) -- 그룹멤버만 노출될 수 있도록 두 테이블 조인
+ 	 order by
+ 	 	count desc
+
+	 </select>
+	 <select resultMap="graphMap" id="selectCommentCountList">
+	 select
+	    member_id as member,
+	    NVL(count,0) as count
+	 from
+        (select
+            member_id
+        from
+            group_member_list
+        where
+            group_id=#{groupId}) table1 -- 그룹의 회원 목록(아이디만)
+        left join
+        (select
+            writer,
+            count(writer) as count
+        from (select
+                  gbc.writer
+                 from
+                     (select 
+                     	*
+                     from
+                     	group_board
+                     where
+                     	group_id = #{groupId}) gb join group_board_comment gbc
+                     on gb.no = gbc.board_no
+                 <where>
+                 	  <if test="day != 0">
+                     gbc.reg_date between sysdate-#{day} and sysdate
+                 	  </if>
+                 </where>
+                 )
+        group by
+            writer) table2
+	 	on table1.member_id = table2.writer -- 댓글이 0개인 사람도 확인하기 위해 두 테이블 조인
+	 order by
+	 	count desc
+	 </select>
+	 
+	 <select resultMap="graphMap" id="selectLikeCountList">
+	select
+        member_id as member,
+        NVL(count,0) as count
+    from
+        (select
+            table2.member_id,
+            count
+        from
+            (select
+                gbl.member_id as member_id,
+                count(gbl.member_id) count
+            from
+                (select
+                    no
+                from
+                    group_board
+                where
+                    group_id=#{groupId}) gb -- 그룹 게시물 목록
+                join
+                (select
+                	*
+                from
+                	group_board_like -- 좋아요 목록
+                <where>
+                 	  <if test="day != 0">
+                     reg_date between sysdate-#{day} and sysdate
+                     </if>
+                 </where>
+                ) gbl
+                on gb.no = gbl.board_no
+            group by
+           		gbl.member_id) table1 -- 그룹의 게시물에 좋아요를 누른 사람 목록
+                
+            right join 
+                (select
+                    member_id
+                from
+                    group_member_list
+                where
+                    group_id = #{groupId}) table2 -- 그룹에 가입된 사람 목록
+            on table1.member_id = table2.member_id)
+        order by
+        	count desc
+	 </select>
+	 
+	 <resultMap id="graphMap" type="map">
+	 <result column="member" property="memberId"/>
+	 <result column="count" property="count"/>
+	 </resultMap>
+	 
+	 <select id="selectHashtagList" resultType="string">
+	 select
+	 	name
+	 from
+	 	group_hashtag
+	 order by
+	 	name
+	 </select>
+	 <select id="selectLikeHashtagList" resultType="string">
+	 select
+	 	name
+	 from
+	 	member_like_group_hashtag
+	 where
+	 	member_id = #{id}
+	 </select>
+	 
+	 <insert id="insertMemberLikeHashtag">
+	 insert into
+	 	member_like_group_hashtag
+	 values(
+	 	#{member.id},
+	 	#{name}
+	 )
+	 </insert>
+	 
+	 <delete id="deleteMemberLikeHashtag">
+	 delete from
+	 	member_like_group_hashtag
+	 where
+	 	member_id = #{member.id}
+	 	and
+	 	name = #{name}
+	 </delete>
+	 <select id="selectRecommendedGroupList" resultType="group">    
+		select
+		    group_id, group_name, image, LISTAGG(hashtag,',') WITHIN GROUP (ORDER BY hashtag ) AS hashtag
+		from
+		    (SELECT group_id, image, group_name
+		         , REGEXP_SUBSTR(g.hashtag,'[^,]+', 1, b.lv) AS hashtag
+		      FROM (select * from group_ where group_id not in (select group_id from group_member_list where member_id = #{id})) g -- 내가 가입한 그룹 제외
+		         , (SELECT LEVEL AS lv 
+		              FROM dual 
+		           CONNECT BY LEVEL <![CDATA[ < ]]>= 30) b --구분자(,) 최대 개수 30개
+		     WHERE REGEXP_SUBSTR(g.hashtag, '[^,]+', 1, b.lv) IS NOT NULL) g
+		    join
+		    (select * from member_like_group_hashtag  where member_id = #{id}) m
+		    on g.hashtag = m.name
+		group by 
+		    group_id, group_name, image
+	 </select>
+	 
+	 <update id="updateGroupLeader">
+	 update 
+	    group_member_list 
+	set 
+	    member_level_code = 'mb'
+	where 
+	    group_id = #{groupId}
+	    and
+	    member_level_code = 'ld' 
+	 	
+	 </update> 
+	 
+	 <delete id="deleteGroup">
+	 delete from
+	 	group_
+	 where
+	 	group_id = #{groupId}
+	 </delete>
+	 
+	 <select id="selectOneId" resultType="_int">
+	 select
+	 	count(*)
+	 from
+	 	group_
+	 where
+	 	group_id = #{id}
+	 </select>
+	 
+	 <select id="selectGroupMemberLevel" resultType="string">
+	 select
+	 	member_level_code
+	 from
+	 	group_member_list
+	 where
+	 	member_id = #{memberId}
+	 	and
+	 	group_id = #{groupId}
+	 </select>
+	 <select id="selectGroupApplyLog" resultType="_int">
+	 	select
+	 		count(*)
+	 	from
+	 		group_apply_list
+	 	where
+	 		member_id = #{memberId}
+	 		and
+	 		group_id = #{groupId}
+	 		and
+	 		handled_yn = 'N'
+	 </select>
+	 
+	 <select id="selectGroupBoardListByHashtag" resultType="groupBoard">
+	 	select
+		    *
+		from 
+		    group_board
+		where
+		    group_id in (SELECT
+		        group_id
+		FROM group_ g -- 내가 가입한 그룹 제외
+		         , (SELECT LEVEL AS lv 
+		              FROM dual 
+				           CONNECT BY LEVEL <![CDATA[ < ]]>= 30) b --구분자(,) 최대 개수 30개
+				WHERE REGEXP_SUBSTR(g.hashtag, '[^,]+', 1, b.lv) IS NOT NULL
+				and REGEXP_SUBSTR(g.hashtag,'[^,]+', 1, b.lv) = #{hashtag})
+		order by
+			reg_date desc
+	 </select> 
+	 
+	 <select id="selectAllGroupCount" resultType="_int">
+	 select
+	 	count(*)
+	 from
+	 	group_
+	 </select>
+	 
+	 <select id="selectAllGroupCountByHashtag" resultType="_int">
+	 select count(*) from (
+		SELECT distinct
+		        group_id
+		FROM group_ g 
+		         , (SELECT
+		                LEVEL AS lv 
+		            FROM
+		                dual 
+		           CONNECT BY LEVEL <![CDATA[ < ]]>= 30) b --구분자(,) 최대 개수 30개
+		WHERE
+			REGEXP_SUBSTR(g.hashtag, '[^,]+', 1, b.lv) IS NOT NULL
+		    and
+		    REGEXP_SUBSTR(g.hashtag, '[^,]+', 1, b.lv) in
+		    	<foreach collection="hashtag" item="name" open="(" separator="," close=")">
+					#{name}
+				</foreach>	
+		    )
+	 </select>
+	 
+	 <select id="selectGroupListByVisitCount" resultMap="groupRanking">  
+		   select
+			    rownum,
+			    b.*
+			from(
+			select
+			    g.group_id, group_name, image, nvl(category,0) as category
+			from
+			    (select * from group_ g where
+			    group_id in (SELECT distinct
+			        group_id
+			FROM group_ g 
+			         , (SELECT
+			                LEVEL AS lv 
+			            FROM
+			                dual 
+			           CONNECT BY LEVEL <![CDATA[ < ]]>= 30) b --구분자(,) 최대 개수 30개
+			WHERE
+			    REGEXP_SUBSTR(g.hashtag, '[^,]+', 1, b.lv) IS NOT NULL
+			    <if test="hashtag != null">
+				    and
+				    REGEXP_SUBSTR(g.hashtag, '[^,]+', 1, b.lv) in
+				    	<foreach collection="hashtag" item="name" open="(" separator="," close=")">
+							#{name}
+						</foreach>	
+				</if>
+				)) g
+			     left join
+			(select
+			    group_id,
+			    count(*) as category
+			from
+			    (select
+					    group_id
+					from
+					    group_visit_log
+					    where
+					    trunc(visit_date) = trunc(sysdate))-- 오늘 방문
+			group by
+			    group_id) a
+			on g.group_id = a.group_id
+			order by
+			    category desc) b
+	 </select>
+	 	 <select id="selectGroupListByMemberCount" resultMap="groupRanking">  
+		    select
+			    rownum,
+			    b.*
+			from(
+			select
+			    g.group_id, group_name, image, nvl(category,0) as category
+			from
+			    group_ g join
+			(select
+			    group_id,
+			    count(*) as category
+			from
+			    (select
+			    group_id
+			from
+			    group_member_list
+			where
+			    group_id in (SELECT distinct
+			        group_id
+			FROM group_ g 
+			         , (SELECT
+			                LEVEL AS lv 
+			            FROM
+			                dual 
+			           CONNECT BY LEVEL <![CDATA[ < ]]>= 30) b --구분자(,) 최대 개수 30개
+			WHERE
+			    REGEXP_SUBSTR(g.hashtag, '[^,]+', 1, b.lv) IS NOT NULL
+			    <if test="hashtag != null">
+				    and
+				    REGEXP_SUBSTR(g.hashtag, '[^,]+', 1, b.lv) in
+				    	<foreach collection="hashtag" item="name" open="(" separator="," close=")">
+							#{name}
+						</foreach>	
+				</if>
+				))
+			group by
+			    group_id) a
+			on g.group_id = a.group_id
+			order by
+			    category desc) b
+	 </select>
+	 	 <select id="selectGroupListByApplyCount" resultMap="groupRanking">  
+		    select
+			    rownum,
+			    b.*
+			from(
+			select
+			    g.group_id, group_name, image, nvl(category,0) as category
+			from
+			    (select * from group_ g where
+			    group_id in (SELECT distinct
+			        group_id
+			FROM group_ g 
+			         , (SELECT
+			                LEVEL AS lv 
+			            FROM
+			                dual 
+			           CONNECT BY LEVEL <![CDATA[ < ]]>= 30) b --구분자(,) 최대 개수 30개
+			WHERE
+			    REGEXP_SUBSTR(g.hashtag, '[^,]+', 1, b.lv) IS NOT NULL
+			    <if test="hashtag != null">
+				    and
+				    REGEXP_SUBSTR(g.hashtag, '[^,]+', 1, b.lv) in
+				    	<foreach collection="hashtag" item="name" open="(" separator="," close=")">
+							#{name}
+						</foreach>	
+				</if>
+				)) g
+			     left join
+			(select
+			    group_id,
+			    count(*) as category
+			from
+			    (select
+					    group_id
+					from
+					    group_apply_list
+					    where
+					    trunc(reg_date) = trunc(sysdate))-- 오늘 방문
+			group by
+			    group_id) a
+			on g.group_id = a.group_id
+			order by
+			    category desc) b
+	 </select>
+	 <resultMap type="map" id="groupRanking">
+	 	<result column="rownum" property="rowNum"/>
+	 	<result column="group_id" property="groupId"/>
+	 	<result column="group_name" property="groupName"/>
+	 	<result column="image" property="image"/>
+	 	<result column="category" property="category"/>
+	 </resultMap>
 </mapper>
 

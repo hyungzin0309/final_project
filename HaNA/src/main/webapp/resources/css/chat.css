@@ -16,7 +16,7 @@
 			background-color: rgba(0,0,0,0.4) !important;
 		}
 		.contacts_body{
-			padding:  0.75rem 0 !important;
+			padding:  0 !important;
 			overflow-y: auto;
 			white-space: nowrap;
 		}
@@ -61,6 +61,7 @@
 			border:0 !important;
 			color: white !important;
 			cursor: pointer;
+			height: 60px;
 		}
 		.send_btn{
 	border-radius: 0 15px 15px 0 !important;
@@ -68,6 +69,7 @@
 			border:0 !important;
 			color: white !important;
 			cursor: pointer;
+			height: 60px;
 		}
 		.search_btn{
 			border-radius: 0 15px 15px 0 !important;
@@ -224,3 +226,5 @@
 	}
 	.card-body contacts_body{pointer-events:none}
 	div#chatroom{pointer-events:all}
+	img.fileImgMessage{width: 200px; height: 200px;}
+	.col-md-4{overflow-y: auto;}

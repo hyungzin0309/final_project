@@ -1,0 +1,29 @@
+@charset "UTF-8";
+
+.admin-total {
+ margin:100px 0px;
+ min-height:1100px;
+}
+.admin-side{
+	border-right:1.3px solid gray;
+	padding-right:70px;
+}
+.admin-side-menu {
+width:100%;
+margin-top:200px;
+}
+.admin-side-menu ul{
+	list-style:none;
+	text-align:right;
+}
+.admin-side-menu ul li {
+	margin-bottom:20px;
+}
+
+.admin-side-menu ul li a{
+	color:gray;
+	text-decoration:none;
+	font-size:1.5em;
+	font-weight:500;
+}
+

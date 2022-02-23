@@ -7,7 +7,7 @@ import java.util.List;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-
+ 
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -27,26 +27,32 @@ public class Member extends MemberEntity implements Serializable, UserDetails{
 	private List<SimpleGrantedAuthority> authorities;
 	private String personality;
 	private String interest;
+	private List<Follower> followers;
+	private int publicProfile;
+	private int publicAdress;
+	private int publicAge;
+	private int publicFriend;
 	
 	@Builder
 	public Member(String id, String name, String password, String picture, String personalId, int accountType,
-			String addressFirst, String addressSecond, String addressThird, String addressFull, String introduce,
-			boolean enabled, List<SimpleGrantedAuthority> authorities, String personality, String interest) {
-		super(id, name, password, picture, personalId, accountType, addressFirst, addressSecond, addressThird,
-				addressFull, introduce, enabled);
+			String addressFull, String addressAll, String introduce, boolean enabled, String locationX,
+			String locationY, List<SimpleGrantedAuthority> authorities, String personality, String interest,
+			List<Follower> followers, int publicProfile , int publicAdress, int publicAge, int publicFriend) {
+		super(id, name, password, picture, personalId, accountType, addressFull, addressAll, introduce, enabled,
+				locationX, locationY);
 		this.authorities = authorities;
 		this.personality = personality;
 		this.interest = interest;
+		this.followers = followers;
+		this.publicProfile = publicProfile;
+		this.publicAdress = publicAdress;
+		this.publicAge = publicAge;
+		this.publicFriend = publicFriend;
 	}
-
-	
-	
-	
-
+ 
 	
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
-		// TODO Auto-generated method stub
 		return authorities;
 	}
 
@@ -78,8 +84,7 @@ public class Member extends MemberEntity implements Serializable, UserDetails{
 
 
 
-
-
+ 
 
 
 

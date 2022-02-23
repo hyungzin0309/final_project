@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="admin">
+
+<select id="selectSearchStatistics" resultMap="searchStatisticsMap">
+select
+	*
+from (
+	select
+		keyword,
+		count(keyword) as count
+	from
+		search_log
+	<where>
+		<if test="category != 'all'">
+			category = #{category}	
+		</if>	
+		<if test="day != 0">
+			<choose>
+				<when test="day != 1">
+				and reg_date between sysdate-#{day} and sysdate
+				</when>
+				<otherwise>
+				and trunc(reg_date) = trunc(sysdate)
+				</otherwise>
+			</choose>
+		</if>
+	</where>
+	group by keyword
+) 
+where count >= 10
+order by count desc
+</select>
+
+<resultMap type="map" id="searchStatisticsMap">
+<result column="keyword" property="keyword"/>
+<result column="count" property="count"/>
+</resultMap>
+
+<insert id="insertHashtag">
+insert into
+	group_hashtag
+values(
+	#{name}	
+)
+</insert>
+
+<delete id="deleteHashtag">
+delete group_hashtag where name=#{name}
+</delete>
+
+	<select id="selectRestrictionList" resultType="map">
+		select
+			*
+		from
+			user_restricted
+		where
+			restricted_date > sysdate
+		order by
+			restricted_date
+	</select>
+	
+	<select id="selectRestrictionListTotalCount" resultType="int">
+		select
+			count(*)
+		from
+			user_restricted
+		where
+			restricted_date > sysdate
+		order by
+			restricted_date
+	</select>
+
+	<select id="selectAppealList" resultType="map">
+		select
+			*
+		from
+			user_restricted
+		where
+			appeal_distriction = 'Y'
+			and
+			restricted_date > sysdate
+	</select>
+	
+	<select id="selectAppealListTotalCount" resultType="int">
+		select
+			count(*)
+		from
+			user_restricted
+		where
+			appeal_distriction = 'Y'
+			and
+			restricted_date > sysdate
+	</select>
+	
+	<select id="selectReportedHistory" parameterType="string" resultType="map">
+		select
+			*
+		from
+			report_history
+		where
+			id = #{id}
+			and
+			status = 'S'
+	</select>
+
+	<update id="updateUserRestrictedDate" parameterType="string">
+		update user_restricted set restricted_date = sysdate where id = #{id}
+	</update>
+
+</mapper>

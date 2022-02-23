@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="search">
+
+<select id="selectMemberListBySearch" resultType="member">
+	select
+		id,name,picture
+	from
+		member
+	where
+		account_type=1
+		and
+		(id like '%' ||  #{keyword} || '%'
+		or
+		name like '%' ||  #{keyword} || '%')
+
+</select>
+
+<select id="selectGroupListBySearch" resultType="group">
+	select
+		group_id,group_name,image
+	from
+		group_
+	where
+		group_id like '%' ||  #{keyword} || '%'
+		or
+		group_name like '%' ||  #{keyword} || '%'
+		or
+		hashtag like '%' ||  #{keyword} || '%'
+
+</select>
+
+<select id="selectShopListBySearch" resultType="member">
+	select
+		id,name,picture
+	from
+		member
+	where
+		account_type = 0
+		and
+		(id like '%' ||  #{keyword} || '%'
+		or
+		name like '%' ||  #{keyword} || '%'
+		or
+		address_all like '%' ||  #{keyword} || '%')
+		or
+		id in (select member_id from shophashtag left join hashtag using(tag_id) where tag_name like '%'||#{keyword}||'%'
+		)
+
+</select>
+
+<select id="selectLocationListBySearch" resultMap="location">
+	select distinct
+		place_address,place_name,location_y,location_x
+	from
+		group_board
+	where
+		place_address like '%' ||  #{keyword} || '%'
+		or
+		place_name like '%' ||  #{keyword} || '%'
+
+</select>
+<resultMap id="location" type="map">
+	<result column="place_address" property="placeAddress"/>
+	<result column="place_name" property="placeName"/>
+	<result column="location_y" property="locationY"/>
+	<result column="location_x" property="locationX"/>
+</resultMap>
+
+<insert id="insertSearchKeywordLog">
+	insert into
+		search_log
+	values(
+		#{category},
+		#{keyword},
+		#{member.id},
+		default
+	)
+</insert>
+
+</mapper>

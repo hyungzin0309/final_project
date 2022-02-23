@@ -5,81 +5,124 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
+<script src="http://code.jquery.com/jquery-1.9.1.js"></script> 
 <fmt:requestEncoding value="utf-8"/>
 
 <jsp:include page="/WEB-INF/views/common/header.jsp">
-    <jsp:param value="메인화면" name="main"/>
+    <jsp:param value="소모임포스팅" name="title" />
 </jsp:include>
-<div>
-    <form
-        action="${pageContext.request.contextPath}/group/enrollGroupBoard?${_csrf.parameterName}=${_csrf.token}"
-        method="post"
-        enctype="multipart/form-data">
-        <table>
-            <tr>
-            <td><input type="hidden" value="<sec:authentication property='principal.username'/>" name="writer"/></td>
-            <td><input type="hidden" value="${groupId}" name="groupId"/></td>
-            </tr>
-            <tr>
-            <td>
-                <label for="file1">첨부파일 1</label>
-                <input type="file" name="file" id="file1" onchange="setThumbnail(event);"/>
-                <div id="image_container"></div>
-            </td>
-            </tr>
-            <tr>
-            <td>
-                <label for="file1">첨부파일 2</label>
-                <input type="file" name="file" id="file2"/>
-            </td>
-            </tr> 
-            <tr>
-            <td>
-                <label for="file1">첨부파일 3</label>
-                <input type="file" name="file" id="file3"/>
-            </td>
-            </tr> 
-            <tr>
-            <td><input id="placeName" name="placeName" type="text" value="" readonly/></td>
-            <td><input id="placeAddress" name="placeAddress" type="text" value="" readonly/></td>
-            <td><input id="locationY" name="locationY" type="text" value="" readonly/></td>
-            <td><input id="locationX" name="locationX" type="text" value="" readonly/></td>
-            </tr>
-            <tr>
-            <td><input type="text" name="content"/></td>
-            </tr>
-            <tr>
-            <td>회원목록</td>
-            </tr>
-            <c:forEach items="${members}" var="member">
-	            <tr>
-	            <td><input type="text" value="${member.id}" name="tagMembers" readonly/></td>
-	            </tr>
-            </c:forEach>
-            <tr><td><input type="submit" /></td></tr>
-        </table>
-    </form>
-</div>
-<div class="map_wrap">
-    <div id="map" style="width:100%;height:100%;position:relative;overflow:hidden;"></div>
+<link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/group/group.css" />
+<link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/group/groupPlus.css" />
+<link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/group/groupBoardForm.css" />
 
-    <div id="menu_wrap" class="bg_white">
-        <div class="option">
-            <div>
-                <form onsubmit="searchPlaces(); return false;">
-                    키워드 : <input type="text" value="이태원 맛집" id="keyword" size="15"> 
-                    <button type="submit">검색하기</button> 
-                </form>
+<div class="form-wrapper bg-white">
+    <div class="h6 font-weight-bold"> 게시글 포스팅 </div>
+    <form
+    	name="groupBoardFrm"
+        action="${pageContext.request.contextPath}/group/enrollGroupBoard?${_csrf.parameterName}=${_csrf.token}"
+        method="POST"
+        enctype="multipart/form-data">
+	    <input type="hidden" value="<sec:authentication property='principal.username'/>" name="writer"/>
+	    <input type="hidden" value="${groupId}" name="groupId"/>
+    
+    <div>작성할 글과 함께 첨부할 파일을 선택해주세요.</div> 
+    	<textarea id="desc" cols="50" rows="5" placeholder="Post" name="content"></textarea> <br />
+    <div id="image-file-container">
+		<div>
+		    <input type="file" class="form-control" placeholder=File name="file" value="파일 선택" style="width: 93%; float: left;">
+		    <button type="button" id="addFile" class="btn btn-primary" onclick="addFileBtn();" style="margin-left: 2%;">+</button>
+		</div>
+	</div>
+	<br />
+	
+    <div class="group-board-form tag-member-btn" style="color:#3f51b5; font-size:1.1em; font-weight:bold;" onclick="$('#groupMemberList').modal('show');">멤버 태그</div>
+	    <!-- 회원목록보기 modal -->
+			<div class="modal fade" id="groupMemberList" tabindex="-1">
+				<div class="modal-dialog modal-dialog-centered">
+					<div class="modal-content">
+						<div class="modal-body">
+							<div id="groupMemberListTableContainer">
+								<table id="groupMemberListTable">
+									<c:forEach items="${members}" var="member" varStatus="vs">
+										<tr>
+						 					<td>
+						 						<a href="javascript:void(0);" onclick="clickMember('tagMember${vs.index}');" >
+						 						<img style="width:50px; height:50px; border-radius:50%" src="<%=request.getContextPath()%>/resources/upload/member/profile/${member.profile}" alt="" />
+						 						</a> 
+						 					</td>
+						 					<th>
+						 						<a href="javascript:void(0);" onclick="clickMember('tagMember${vs.index}');" style="color:black; text-decoration:none;">
+						 							&nbsp;&nbsp;&nbsp;&nbsp;${member.memberId}
+						 						</a>
+						 							<c:if test="${member.memberLevelCode eq 'ld'}"><span style="color:#ff5722">&nbsp;&nbsp;[Leader]</span></c:if>
+						 							<c:if test="${member.memberLevelCode eq 'mg'}"><span style="color:#ff9800">&nbsp;&nbsp;[Manager]</span></c:if>
+						 					</th> 
+						 					<td>&nbsp;&nbsp;&nbsp;<input type="checkbox" name="tagMembers" value="${member.memberId}" id="tagMember${vs.index}"/></td>
+						 				</tr>
+									</c:forEach>
+								</table>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		<br />
+  		<div><span style="font-size:1.1em; font-weight:bold;">Location Tag</span></div>
+		<div class="row" style="margin-top:10px; margin-bottom:10px;">
+            <div class="col-6"> 
+                <div class="form-group"> <input id="placeName" class="form-control" name="placeName" type="text" value="" readonly/>
+                    <div class="label" id="tel"></div>
+                </div>
             </div>
+            <div class="col-6">
+                <div class="form-group"> <input id="placeAddress" class="form-control" name="placeAddress" type="text" value="" readonly/>
+                    <div class="label" id="email"></div>
+                </div>
+            </div>
+            <input id="locationY" name="locationY" type="hidden" value="" readonly/>
+            <input id="locationX" name="locationX" type="hidden" value="" readonly/>
         </div>
-        <hr>
-        <ul id="placesList"></ul>
-        <div id="pagination"></div>
-    </div>
+           </form>
+        <div class="map_wrap">
+		    <div id="map" style="width:100%;height:100%;position:relative;overflow:hidden;"></div>
+		
+		    <div id="menu_wrap" class="bg_white">
+		        <div class="option">
+		            <div>
+		                <form onsubmit="searchPlaces(); return false;">
+		                    키워드 : <input type="text" value="이태원 맛집" id="keyword" size="15"> 
+		                    <button type="submit">검색하기</button> 
+		                </form>
+		            </div>
+		        </div>
+		        <hr>
+		        <ul id="placesList"></ul>
+		        <div id="pagination"></div>
+		    </div>
+		</div>
+        <br />
+	    <div class="d-flex justify-content-end pt-2">
+	        <div class="btn btn-primary" onclick="submitBoard();">등록하기</div>
+	    </div>
 </div>
 
 <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=fe4df2cda826ac2a53225fb7dea2a307&libraries=services"></script>
 <script>
+// 태그멤버 클릭시 체크박스 on/off
+function clickMember(id){
+	console.log(id);
+	var checked = $(`#\${id}`).is(':checked');
+	$(`#\${id}`).prop('checked',!checked);
+}
+
+function addFileBtn(){
+	var rowItem = '<div>'
+        rowItem += "<input type='file' class='form-control' placeholder='File' name='file' value='파일 선택'>"
+		rowItem += '</div>';
+
+	$('#image-file-container').append(rowItem); 
+}
+
 // 카카오 지도 API
 
 // 마커를 담을 배열입니다
@@ -321,8 +364,7 @@ function removeAllChildNods(el) {
     }
 
 } 
-</script>
-<script>
+
 //이미지 미리보기
 function setThumbnail(event){
 	var reader = new FileReader();
@@ -335,5 +377,35 @@ function setThumbnail(event){
 	reader.readAsDataURL(event.target.files[0]);
 }
 
+function submitBoard(){
+	
+	let flag = 0;
+	let fileArr = $("[name=file]").get();
+	
+	$.each(fileArr,(i,e)=>{
+		if($(e).val() != ''){
+			flag = 1;
+		}
+	})
+	
+	if(flag == 0){
+		alert("이미지 파일을 첨부하세요.")
+	}
+	else if($("[name=content]").val() == ''){
+		alert("글을 입력하세요.")
+	}
+	else if($("[name=locationX]").val() == ""){
+		alert("장소를 태그하세요.");
+	}
+	else {
+		$(document.groupBoardFrm).submit();
+	}
+}
 </script>
+<style>
+body {
+ background:#eee;
+}
+
+</style>
 <jsp:include page="/WEB-INF/views/common/footer.jsp"></jsp:include> 

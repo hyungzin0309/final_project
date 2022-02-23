@@ -3,5 +3,29 @@
 .body-section {
 	width : 1400px;
 	margin : auto;
-	min-height : 1000px;
+	min-height : 1400px;
 }
+#notiArea{
+	display:none;
+	position:absolute;
+	z-index:1;
+	background-color:#f3f3f3;
+	min-width:200px;
+	/* min-height:300px; */
+	transform:translateY(60px);
+}
+#notiTable{
+	border: 1px dotted black;
+	border-collapse: collapse;
+}
+#notiTable th{
+	border: 1px dotted black;
+}
+#notiTable td{
+	border: 1px dotted black;
+}
+
+.searchArea{
+	transform:translateX(-10px);
+}
+
