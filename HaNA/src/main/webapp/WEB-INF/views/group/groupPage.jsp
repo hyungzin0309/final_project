@@ -58,6 +58,7 @@ if(msg != null){
 <!-- 게시물 목록 -->
 <div class="group-board-container">
 	<c:forEach items="${groupBoardList}" var="board" varStatus="vs">
+		<!-- row 클래스를 통해 개행 -->
 		${vs.index%3 == 0? "<div style='margin-bottom:30px;' class='row'>" : ""}
 	        <div class="col-sm-4" >
 	        <div class="group-board-thumbnail-container">

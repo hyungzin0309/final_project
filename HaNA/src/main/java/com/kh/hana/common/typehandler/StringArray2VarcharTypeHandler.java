@@ -32,19 +32,19 @@ public class StringArray2VarcharTypeHandler extends BaseTypeHandler<String[]> {
 
 	@Override
 	public String[] getNullableResult(ResultSet rs, String columnName) throws SQLException {
-		String value = rs.getString(columnName); // varcha2 -> String
+		String value = rs.getString(columnName); // varchar2 -> String
 		return value != null ? value.split(",") : null; // String -> String[]
 	}
 
 	@Override
 	public String[] getNullableResult(ResultSet rs, int columnIndex) throws SQLException {
-		String value = rs.getString(columnIndex); // varcha2 -> String
+		String value = rs.getString(columnIndex); // varchar2 -> String
 		return value != null ? value.split(",") : null; // String -> String[]
 	}
 
 	@Override
 	public String[] getNullableResult(CallableStatement cs, int columnIndex) throws SQLException {
-		String value = cs.getString(columnIndex); // varcha2 -> String
+		String value = cs.getString(columnIndex); // varchar2 -> String
 		return value != null ? value.split(",") : null; // String -> String[]
 	}
 
