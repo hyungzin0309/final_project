@@ -106,7 +106,7 @@ $('.board-main-image').click((e)=>{
 });
 
 
-// 게시물 상세보기 페이지 불러오기 함수
+// 게시물 상세보기 페이지 데이터 불러오기 함수
 function getPageDetail(boardNo){
 	console.log("aaa",boardNo);
 	$.ajax({
@@ -114,19 +114,20 @@ function getPageDetail(boardNo){
 				success(data){
 			 
 			 		const {groupBoard, tagMembers, isLiked} = data;
-			 		console.log(groupBoard);
-			 		console.log(tagMembers);
-			 		console.log(isLiked);
-		 			gb = groupBoard;
+			 		console.log(groupBoard); // 게시글 기본 정보
+			 		console.log(tagMembers); // 태그된 멤버들
+			 		console.log(isLiked); //좋아요 눌렀는지 여부
+		 			gb = groupBoard; // 다른 함수에서도 게시물 데이터에 쉽게 접근하기 위해, 전역변수에 대입
 		 			
 		 			// modal의 header부분
-		 			const date = moment(groupBoard.regDate).format("YYYY년 MM월 DD일");
+		 			const date = moment(groupBoard.regDate).format("YYYY년 MM월 DD일"); // 작성일자
 					let src = `<%=request.getContextPath()%>/resources/upload/member/profile/\${groupBoard.writerProfile}`;
 			 		$("#member-profile").children("img").attr("src",src); // 글쓴이 프로필 이미지
-		 	 		$("#member-id").html(`&nbsp;&nbsp<a href="${pageContext.request.contextPath}/group/groupPage/\${groupBoard.groupId}" style="color:black; text-decoration:none; font-size:1.2em;">[\${groupBoard.groupId}]</a><a href="javascript:void(0);" onclick="goMemberView('\${groupBoard.writer}');" style="color:black; text-decoration:none;">&nbsp;&nbsp;\${groupBoard.writer}</a>`); // 글쓴이 아이디
-			 		$("#reg-date").html(`&nbsp;&nbsp;\${date}`) // 날짜, 태그 장소
+			 		//글쓴이 아이디
+		 	 		$("#member-id").html(`&nbsp;&nbsp<a href="${pageContext.request.contextPath}/group/groupPage/\${groupBoard.groupId}" style="color:black; text-decoration:none; font-size:1.2em;">[\${groupBoard.groupId}]</a><a href="javascript:void(0);" onclick="goMemberView('\${groupBoard.writer}');" style="color:black; text-decoration:none;">&nbsp;&nbsp;\${groupBoard.writer}</a>`);
+			 		$("#reg-date").html(`&nbsp;&nbsp;\${date}`) // 작성일
 			 		
-			 		// 날짜 및 태그장소
+			 		// 태그장소
 			 		$("#tag-place").html(`,&nbsp;&nbsp;\${groupBoard.placeName}`)
 			 		$("[name=locationX]").val(groupBoard.locationX);
 			 		$("[name=locationY]").val(groupBoard.locationY);
@@ -136,18 +137,19 @@ function getPageDetail(boardNo){
 			 		
 			 		// 좋아요 버튼
 			 		if(isLiked){
-			 			$(".unlike").css("display","none");
-			 			$(".like").css("display","inline");
+			 			$(".unlike").css("display","none"); 
+			 			$(".like").css("display","inline"); // 좋아요가 이미 눌린 상태라면, like클래스의 이미지가 보이도록 함 (분홍색 꽉찬 하트)
 			 		}else{
 			 			$(".like").css("display","none");			 			
-			 			$(".unlike").css("display","inline");			 			
+			 			$(".unlike").css("display","inline"); // 좋아요가 눌려있지 않은 상태라면, unlike클래스의 이미지가 보이도록 함(빈 하트) 			
 			 		}
 		 	 		
 			 		//좋아요 개수
 			 		getLikeCount();
 			 		
 			 		// modal footer부분 - 게시물 삭제 버튼
-		 	 		if("<sec:authentication property='principal.username'/>" != groupBoard.writer && "<sec:authentication property='principal.username'/>" != "${group.leaderId}"){
+		 	 		if("<sec:authentication property='principal.username'/>" != groupBoard.writer
+		 	 				&& "<sec:authentication property='principal.username'/>" != "${group.leaderId}"){ // 작성자이거나 소모임 리더인 경우만 글 삭제 가능
 			 			$(".btn-deleteBoard").css("display","none");
 			 		}else{
 			 			$(".btn-deleteBoard").css("display","block");
@@ -158,6 +160,7 @@ function getPageDetail(boardNo){
 		 	 		
 			 		// 이미지
 			 		$("#group-board-img-container").empty();
+			 		// 이미지 넘기기 좌/우 버튼
 			 		const button = `<div class="img-move-button-container">
 				        <img class="board-img-move left-button" src="<%=request.getContextPath()%>/resources/images/icons/left1.png" alt="" />
 				        <img class="board-img-move right-button" src="<%=request.getContextPath()%>/resources/images/icons/right1.png" alt="" />
@@ -165,7 +168,7 @@ function getPageDetail(boardNo){
 			 		$("#group-board-img-container").append(button);
 				        
 			 		$.each(groupBoard.image, (i,e)=>{
-		 				
+			 			// 각 이미지마다 다른 번호의 id부여
 		 				let img = `<img id='img\${i}' src='<%=request.getContextPath()%>/resources/upload/group/board/\${e}' alt="" class="group-board-img"/>`
 		 				$("#group-board-img-container").append(img); // 이미지 추가
 			  			$(`#img\${i}`).css("display","none");
@@ -177,27 +180,26 @@ function getPageDetail(boardNo){
 		  			$(".group-board-img").css("left","0");
 		  			$("#img0").css("display","inline");
 					
-		  			currentIndex = 0;
+		  			currentIndex = 0; // 화면에 보이는 이미지의 인덱스의 기본값 (처음 화면에 보이는 이미지는 인덱스0의 이미지)
 		  			
 		  			//이미지 옆으로 넘기기
 		  			$(".right-button").click((e)=>{
-						if(currentIndex<maxIndex){
-			  				$(`#img\${currentIndex+1}`).css("display","inline");
-			  				$(`#img\${currentIndex}`).css("display","none");
-			  				currentIndex += 1;							
+						if(currentIndex<maxIndex){ // 가장 마지막 사진이 아닌 경우에만 오른쪽 버튼 실행
+			  				$(`#img\${currentIndex+1}`).css("display","inline"); // 다음 이미지 보이게 
+			  				$(`#img\${currentIndex}`).css("display","none"); // 현재 이미지는 보이지 않게
+			  				currentIndex += 1; // 현재이미지의 index값을 최신화
 						}
 		  			})
 		  			$(".left-button").click((e)=>{
-						if(currentIndex>0){
-			  				$(`#img\${currentIndex-1}`).css("display","inline");
-			  				$(`#img\${currentIndex}`).css("display","none");
-			  				currentIndex -= 1;							
+						if(currentIndex>0){ // 가장 처음 사진이 아닌 경우에만 왼쪽 버튼 실행
+			  				$(`#img\${currentIndex-1}`).css("display","inline"); // 이전 이미지 보이게
+			  				$(`#img\${currentIndex}`).css("display","none"); // 현재 이미지는 보이지 않게
+			  				currentIndex -= 1;	// 현재 이미지의 index값을 최신화
 						}
 		  			})
 		  			
 		 			//modal의 body부분
 		 			//태그 멤버 목록
-		 			
 		  			$("#tagMemberListTable").empty();
 		 			$.each(tagMembers, (i,e)=>{
 		 				let tr = `<tr>
@@ -208,15 +210,15 @@ function getPageDetail(boardNo){
 		 			})
 					
 		 			//content
-		 			getContent();
+		 			getContent(); // 컨텐츠 불러오는 함수 실행
 		 			
 		 			//댓글 리스트
-		 			getCommentList(groupBoard.no);
+		 			getCommentList(groupBoard.no); // 댓글 불러오는 함수 실행
 		 			
 		 			//댓글 입력창
 		 			$("#group-board-comment-submit #boardNo").val(groupBoard.no);
 		 				
-		 			//모달 노출
+		 			//모달에 데이터가 들어가는 작업이 완료되면 모달을 보이게 함
 		 			$('#groupPageDetail').modal("show");
 		 			
 		 		},
@@ -228,7 +230,7 @@ function getPageDetail(boardNo){
 				}
 			})
 }
-//좋아요 개수
+//좋아요 개수 불러오기
 function getLikeCount(){
 	$.ajax({
 		url:`${pageContext.request.contextPath}/group/getLikeCount/\${gb.no}`,
@@ -275,16 +277,6 @@ function like(){
 			$(".like").css("display","inline");			 			
  			$(".unlike").css("display","none");
  			getLikeCount();
-
-		    const data1 = {
-		            "roomNo" : 226,
-		            "memberId" : `${loginMember.id}`,
-		            "message"   : `\${gb.writer}@${loginMember.id}님이 좋아요를 눌렀습니다.@\${gb.no}@그룹@\${gb.groupId}`,
-		            "picture" : `${loginMember.picture}`,
-		            "messageRegDate" : today
-		        }; 
-		    let jsonData = JSON.stringify(data1);
-		    websocket.send(jsonData);	
 		    
 		},
 		error(xhr, statusText, err){
@@ -298,6 +290,7 @@ function like(){
 // 게시물 불러오기 함수
 function getContent(){
 	let boardContent = `\${gb.content}</br>`
+	// 글 작성자 혹은 소모임 리더에게만 수정버튼 보이게
 	if(gb.writer == "<sec:authentication property='principal.username'/>" || "<sec:authentication property='principal.username'/>" == "${group.leaderId}"){
 		boardContent += `<button class='btn-boardModify' onclick="boardContentModifyFunc();">수정</button></br>`
 	}
@@ -309,7 +302,7 @@ function boardContentModifyFunc(){
 	let form = `
 		<div style="height:90%;">
 			<input type="hidden" name="no" value="\${gb.no}"/>
-			<textarea style="height:100%;" name="content">\${gb.content}</textarea>
+			<textarea style="height:100%;" name="content">\${gb.content}</textarea> // 수정폼 내 textarea에 기존의 content내용이 그대로 들어가있도록 함
 		</div>
 		<button class="btn-submitContent" onclick="submitModifiedContent(this);">등록</button>
 	`;
@@ -317,7 +310,7 @@ function boardContentModifyFunc(){
 	
 	// textarea의 변경값 실시간 감지
 	$("textarea[name=content]").on("propertychange change keyup paste input", function() {
-	   // 현재 변경된 데이터 셋팅
+	   // 현재 변경된 데이터를 전역변수 newContent에 대입
 	   newContent = $(this).val();
 	});
 	
@@ -330,7 +323,7 @@ function submitModifiedContent(e){
 		url:`${pageContext.request.contextPath}/group/groupBoardModifying`,
 		method:"POST",
 		data:{
-			"no":no,
+			"no":no, // 게시물번호
 			"content":newContent
 		},
 		success(data){
@@ -345,6 +338,7 @@ function submitModifiedContent(e){
 		}
 	}) 
 }
+// modifyContentFrm을 제출하려고 할 때, 제출을막고 modifiedBoardSubmitFunc가 먼저 실행될 수 있도록 함
 $(document.modifyContentFrm).submit((e)=>{
 	e.preventDefault();
 });
@@ -382,6 +376,7 @@ function getCommentList(boardNo){
 						&nbsp;&nbsp;&nbsp;\${e.content}
 					</td>`;
 				if(e.commentLevel == 1){
+					// 댓글레벨 1 && 내가 작성자이거나 소모임 리더일 때 (답글버튼, 삭제버튼 모두보임)
 					if(e.writer == "<sec:authentication property='principal.username'/>" || "<sec:authentication property='principal.username'/>" == "${group.leaderId}"){ //댓글 레벨 1 && 내가 작성자일 때 (삭제, 답글 버튼 모두)
 						tr+=`<td>
 								<span href='' class='btn-boardCommentDelete' onclick='deleteCommentFunc(\${e.no},\${e.boardNo})'>삭제</span>
@@ -391,7 +386,7 @@ function getCommentList(boardNo){
 								<input type="hidden" id="reply-board-no" value="\${boardNo}"/>
 							</td>`;	
 					}
-					else{ // 댓글레벨 1 && 내가 작성자가 아닐 때 (답글 버튼만)
+					else{ // 댓글레벨 1 && 내가 작성자가 아닐 때 (답글 버튼만 보이게)
 						tr+=`<td></td>
 						<td>
 							<button class="btn-reply" onclick="showReplyForm(this);" value="\${e.no}">답글</button>
@@ -399,7 +394,7 @@ function getCommentList(boardNo){
 						</td>`;	
 					}
 				}	
-				else{ // 댓글레벨 2 && 내가 작성자 혹은 그룹 리더일 때 (삭제버튼만)
+				else{ // 댓글레벨 2 && 내가 작성자 혹은 그룹 리더일 때 (삭제버튼만 보이게)
 					if(e.writer == "<sec:authentication property='principal.username'/>" || "<sec:authentication property='principal.username'/>" == "${group.leaderId}"){
 						tr+=`<td></td><td style='padding-left:5px;'><span class='btn-boardCommentDelete' onclick='deleteCommentFunc(\${e.no},\${e.boardNo})'>삭제</span></td>`;	
 					}
@@ -428,7 +423,7 @@ function deleteCommentFunc(no,boardNo){
 			method:"DELETE",
 			success(data){
 				console.log(data);
-				getCommentList(boardNo);
+				getCommentList(boardNo); // 댓글을 삭제하면 새로고침된 댓글 리스트가 보여질 수 있도록 함
 			},
 			error(xhr, statusText, err){
 				switch(xhr.status){
@@ -465,6 +460,8 @@ function showReplyForm(e){
 	// e.target인 버튼태그의 부모tr을 찾고, 다음 형제요소로 추가
 	const $baseTr = $(e).parent().parent(); // 답글 다려는 댓글의 tr
 	const $tr = $(tr); //HTML담긴 제이쿼리 변수
+	// 클릭이벤트핸들러 제거
+	// 답글 다는 동안 답글버튼 또 눌렀을 때 새로운 html생성되는 것 방지
 	$(e).removeAttr("onclick");
 	$tr.insertAfter($baseTr)
 		.find("form")
@@ -473,8 +470,6 @@ function showReplyForm(e){
 			submitCommentFunc(e);
 	});
 }
-	// 클릭이벤트핸들러 제거!
-	// 답글 다는 동안 답글버튼 또 눌렀을 때 새로운 html생성되는 것 방지
 //댓글 입력
 $(document.groupBoardCommentSubmitFrm).submit((e)=>{
 	e.preventDefault();
@@ -502,32 +497,7 @@ function submitCommentFunc(e){
 		contentType:"application/json; charset=utf-8",
 		success(data){
 			console.log(data);
-			$("[name=content]",e.target).val("");
-				
-			<!-- 게시글 작성자한테 -->
-			if($("[name=commentLevel]",e.target).val() === '1'){			
-		    const data1 = {
-		            "roomNo" : 226,
-		            "memberId" : `${loginMember.id}`,
-		            "message"   : `\${gb.writer}@${loginMember.id}님이 댓글을 등록했습니다.@\${boardNo}@그룹@\${gb.groupId}`,
-		            "picture" : `${loginMember.picture}`,
-		            "messageRegDate" : today
-		        }; 
-		    let jsonData = JSON.stringify(data1);
-		    websocket.send(jsonData);	
-			}
-			<!-- 댓글 작성자한테 -->
-			else{
-			    const data1 = {
-			            "roomNo" : 226,
-			            "memberId" : `${loginMember.id}`,
-			            "message"   : `\${commentwriter}@${loginMember.id}님이 대댓글을 등록했습니다.@\${boardNo}@그룹@\${gb.groupId}`,
-			            "picture" : `${loginMember.picture}`,
-			            "messageRegDate" : today
-			        }; 
-			    let jsonData = JSON.stringify(data1);
-			    websocket.send(jsonData);	
-			}			
+			$("[name=content]",e.target).val("");	
 			
 			getCommentList(boardNo);
 		},
