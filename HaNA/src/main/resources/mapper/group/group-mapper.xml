@@ -489,20 +489,12 @@
                 gbl.member_id as member_id,
                 count(gbl.member_id) count
             from
-                (select
-                    no
-                from
-                    group_board
-                where
-                    group_id=#{groupId}) gb -- 그룹 게시물 목록
+                (select no from group_board where group_id=#{groupId}) gb -- 그룹 게시물 목록
                 join
-                (select
-                	*
-                from
-                	group_board_like -- 좋아요 목록
+                (select * from group_board_like -- 좋아요 목록
                 <where>
                  	  <if test="day != 0">
-                     reg_date between sysdate-#{day} and sysdate
+                     reg_date between sysdate-#{day} and sysdate -- 분류 기간 내에 발생한 좋아요에 대해서만
                      </if>
                  </where>
                 ) gbl
@@ -510,13 +502,8 @@
             group by
            		gbl.member_id) table1 -- 그룹의 게시물에 좋아요를 누른 사람 목록
                 
-            right join 
-                (select
-                    member_id
-                from
-                    group_member_list
-                where
-                    group_id = #{groupId}) table2 -- 그룹에 가입된 사람 목록
+            right join -- 소그룹의 멤버이지만 좋아요 기록이 없는 경우도 고려
+                (select member_id from group_member_list where group_id = #{groupId}) table2 -- 그룹에 가입된 사람 목록
             on table1.member_id = table2.member_id)
         order by
         	count desc

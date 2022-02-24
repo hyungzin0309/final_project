@@ -627,7 +627,9 @@ public class GroupController {
 	}
 	
 	@GetMapping("/getVisitGraph/{groupId}")
-	public ResponseEntity<List<Map<String,Object>>> getVisitGraph(@PathVariable String groupId, @RequestParam int day){
+	public ResponseEntity<List<Map<String,Object>>> getVisitGraph(
+			@PathVariable String groupId,
+			@RequestParam int day){
 		Map<String,Object> param = new HashMap<>();
 		param.put("groupId",groupId);
 		param.put("day",day);
@@ -647,7 +649,9 @@ public class GroupController {
 	}
 	
 	@GetMapping("/getLikeGraph/{groupId}")
-	public ResponseEntity<List<Map<String,Object>>> getLikeGraph(@PathVariable String groupId, @RequestParam int day){
+	public ResponseEntity<List<Map<String,Object>>> getLikeGraph(
+			@PathVariable String groupId,
+			@RequestParam int day){
 		Map<String,Object> param = new HashMap<>();
 		param.put("groupId",groupId);
 		param.put("day",day);

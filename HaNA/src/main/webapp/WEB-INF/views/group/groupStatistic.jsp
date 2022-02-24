@@ -39,6 +39,7 @@
 </div>
 
 <script>
+
 	$(document).ready(getVisitStatistic);
 
 	$("#category, #day").change((e)=>{
@@ -103,7 +104,7 @@
 			let width = (e.count/max)*80;
 			let count = "";
 			if(e.count != 0){
-				count = e.count; // e.count가 0이 아닐 때만 표기
+				count = e.count; // e.count가 0이 아닐 때만 숫자 표시
 			}
 			let tr = `<tr>
 				<td class='graph-memberId'>\${e.memberId}&nbsp;</td>
