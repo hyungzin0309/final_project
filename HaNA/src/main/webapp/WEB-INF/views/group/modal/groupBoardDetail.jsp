@@ -509,6 +509,6 @@ function submitCommentFunc(e){
 		}
 	})
 };
-
+//
 
 </script>

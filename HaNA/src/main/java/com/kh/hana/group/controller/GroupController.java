@@ -627,9 +627,7 @@ public class GroupController {
 	}
 	
 	@GetMapping("/getVisitGraph/{groupId}")
-	public ResponseEntity<List<Map<String,Object>>> getVisitGraph(
-			@PathVariable String groupId,
-			@RequestParam int day){
+	public ResponseEntity<List<Map<String,Object>>> getVisitGraph(@PathVariable String groupId, @RequestParam int day){
 		Map<String,Object> param = new HashMap<>();
 		param.put("groupId",groupId);
 		param.put("day",day);
@@ -649,9 +647,7 @@ public class GroupController {
 	}
 	
 	@GetMapping("/getLikeGraph/{groupId}")
-	public ResponseEntity<List<Map<String,Object>>> getLikeGraph(
-			@PathVariable String groupId,
-			@RequestParam int day){
+	public ResponseEntity<List<Map<String,Object>>> getLikeGraph(@PathVariable String groupId, @RequestParam int day){
 		Map<String,Object> param = new HashMap<>();
 		param.put("groupId",groupId);
 		param.put("day",day);
@@ -742,22 +738,25 @@ public class GroupController {
 	
 
 	
-	@GetMapping("/getGroupRanking/visit")
-	public ResponseEntity<Map<String,Object>> getGroupRankingByVisit(@RequestParam(value="hashtag[]", required=false) String[] hashtag, int cPage){
+	@GetMapping("/getGroupRanking/{category}")
+	public ResponseEntity<Map<String,Object>> getGroupRankingByVisit(@PathVariable String category, @RequestParam(value="hashtag[]", required=false) String[] hashtag, int cPage){
 		Map<String, Object> param = new HashMap<>();
-		
 		// 그룹 리스트
 		int limit = 6;
 		int offset = (cPage-1)*limit;
 		int pagebarSize = 5;
-		
+		log.info("category : {}",category);
 		param.put("limit",limit);
 		param.put("offset",offset);
 		if(hashtag!=null) {
 			param.put("hashtag", hashtag);			
 		}
-		
-		List<Map<String,Object>> rankingGroupList = groupService.selectGroupListByVisitCount(param);
+		List<Map<String,Object>> rankingGroupList = new ArrayList<>();
+		switch(category) {
+		case "visit" : rankingGroupList = groupService.selectGroupListByVisitCount(param); break;
+		case "apply" : rankingGroupList = groupService.selectGroupListByApplyCount(param); break;
+		case "member" : rankingGroupList = groupService.selectGroupListByMemberCount(param); break;
+		}
 		log.info("list = {}",rankingGroupList);
 		
 		// 페이지 바
@@ -773,73 +772,8 @@ public class GroupController {
 		map.put("rankingGroupList", rankingGroupList);
 		map.put("pagebar", pagebar);
 		
-		return ResponseEntity.ok(map);
-	}
-	@GetMapping("/getGroupRanking/member")
-	public ResponseEntity<Map<String,Object>> getGroupRankingByMember(@RequestParam(value="hashtag[]", required=false) String[] hashtag, int cPage){
-		Map<String, Object> param = new HashMap<>();
-		// 그룹 리스트
-		int limit = 6;
-		int offset = (cPage-1)*limit;
-		int pagebarSize = 5;
-		
-		param.put("limit",limit);
-		param.put("offset",offset);
-		if(hashtag!=null) {
-			param.put("hashtag", hashtag);			
+		return ResponseEntity.ok(map);	
 		}
-		
-		List<Map<String,Object>> rankingGroupList = groupService.selectGroupListByMemberCount(param);
-		log.info("list = {}",rankingGroupList);
-		
-		// 페이지 바
-		int totalContent = 0;
-		if(hashtag == null) {
-			totalContent = groupService.selectAllGroupCount();			
-		}else {
-			totalContent = groupService.selectAllGroupCountByHashtag(param);
-		}
-		String pagebar = HanaUtils.getPagebarAjax2(cPage,limit,pagebarSize,totalContent);
-		
-		Map<String,Object> map = new HashMap<>();
-		map.put("rankingGroupList", rankingGroupList);
-		map.put("pagebar", pagebar);
-		
-		return ResponseEntity.ok(map);
-	}
-	
-	@GetMapping("/getGroupRanking/apply")
-	public ResponseEntity<Map<String,Object>> getGroupRankingByApply(@RequestParam(value="hashtag[]", required=false) String[] hashtag, int cPage){
-		Map<String, Object> param = new HashMap<>();
-		// 그룹 리스트
-		int limit = 6;
-		int offset = (cPage-1)*limit;
-		int pagebarSize = 5;
-		
-		param.put("limit",limit);
-		param.put("offset",offset);
-		if(hashtag!=null) {
-			param.put("hashtag", hashtag);			
-		}
-		
-		List<Map<String,Object>> rankingGroupList = groupService.selectGroupListByApplyCount(param);
-		log.info("list = {}",rankingGroupList);
-		
-		// 페이지 바
-		int totalContent = 0;
-		if(hashtag == null) {
-			totalContent = groupService.selectAllGroupCount();			
-		}else {
-			totalContent = groupService.selectAllGroupCountByHashtag(param);
-		}
-		String pagebar = HanaUtils.getPagebarAjax2(cPage,limit,pagebarSize,totalContent);
-		
-		Map<String,Object> map = new HashMap<>();
-		map.put("rankingGroupList", rankingGroupList);
-		map.put("pagebar", pagebar);
-		
-		return ResponseEntity.ok(map);
-	}
 	
 	
 }
